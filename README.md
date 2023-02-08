@@ -22,7 +22,8 @@ structure = Project('.').create_structure(
 
 structure.set_repeat(10)
 J = 0.1 # eV
-first_shell_tensor = structure.get_shell_matrix()[0]
+neighbors = structure.get_neighbors()
+first_shell_tensor = neighbors.get_shell_matrix()[0]
 
 mc = MC(len(structure))
 mc.set_heisenberg_coeff(J*first_shell_tensor.toarray())
