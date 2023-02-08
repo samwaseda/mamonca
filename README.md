@@ -14,10 +14,9 @@ Suppose we have a bcc Fe system created by [pyiron](http://github.com/pyiron/pyi
 from pyiron import Project
 from mc import MC
 
-structure = Project('.').create_structure(
-    element='Fe',
-    bravais_basis='bcc',
-    lattice_constant=2.85
+structure = Project('.').create.structure.bulk(
+    name='Fe',
+    cubic=True
 )
 
 structure.set_repeat(10)
