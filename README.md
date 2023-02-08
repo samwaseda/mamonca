@@ -1,11 +1,32 @@
-# sams-studio
+# Magnetic Metropolis Monte Carlo following classical Boltzmann statistics
 
-This is my personal depository, although I think the following codes could be important to many people
+This code allows you to launch Metropolis Monte Carlo simulations via Heisenberg Landau models (with various polynomial degrees) from a jupyter notebook.
 
-# Monte Carlo code (MC)
+## How to compile
 
-This code allow the user to launch MC simulations from pyiron or other platforms. Explanations follow...
+Download all files and run `python setup.py build_ext --inplace`.
 
-# Ridge regression code (RIDGE)
+## How to launch a simple calculation
 
-To launch an individual coefficient ridge regression, i.e. the regularization parameter is by default defined for each individual coefficient, so that the result a priori should not depend on the number of parameters, in contrast to what normal ridge regression would do.
+Suppose we have a bcc Fe system created by [pyiron](http://github.com/pyiron/pyiron) (e.g. via `structure = Project('.').create_structure('Fe', 'bcc', 2.83).repeat(10)`) and a Heisenberg coefficient `J=0.1` (eV). Then the magnetic interactions can be calculated by:
+
+```
+from pyiron import Project
+from mc import MC
+
+structure = Project('.').create_structure(element='Fe',
+					  bravais_basis='bcc',
+					  lattice_constant=2.85)
+structure.set_repeat(10)
+J = 0.1 # eV
+first_shell_tensor = structure.get_shell_matrix()[0]
+
+mc = MC(len(structure))
+mc.set_heisenberg_coeff(J*first_shell_tensor.toarray())
+
+mc.run(temperature=300, number_of_iterations=1000)
+```
+
+The results can be analysed by attributes like `get_mean_energy()` or `get_magnetic_moments`.
+
+For more info, take a look at `mc.pyx`.
