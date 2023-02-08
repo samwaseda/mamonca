@@ -7,34 +7,38 @@ import numpy as np
 cdef class MC:
     """
 
-        Magnetic Metropolis Monte Carlo module. It does not have to work with pyiron, but for
-        convenience it is strongly recommended to do so. Here's a short example:
+    Magnetic Metropolis Monte Carlo module. It does not have to work with pyiron, but for
+    convenience it is strongly recommended to do so. Here's a short example:
 
-            from pyiron import Project
-            from mc import MC
+    >>> from pyiron import Project
+    >>> from mc import MC
+    >>> 
+    >>> structure = Project('.').create_structure(
+    >>>     element='Fe',
+    >>>     bravais_basis='bcc',
+    >>>     lattice_constant=2.85
+    >>> )
+    >>> 
+    >>> structure.set_repeat(10)
+    >>> J = 0.1 # eV
+    >>> neighbors = structure.get_neighbors()
+    >>> first_shell_tensor = neighbors.get_shell_matrix()[0]
+    >>> 
+    >>> mc = MC(len(structure))
+    >>> mc.set_heisenberg_coeff(J*first_shell_tensor.toarray())
+    >>> 
+    >>> mc.run(temperature=300, number_of_iterations=1000)
 
-            structure = Project('.').create_structure(
-                element='Fe', bravais_basis='bcc', lattice_constant=2.85
-            )
-            structure.set_repeat(10)
-            J = 0.1 # eV
-            first_shell_tensor = structure.get_shell_matrix(1)
+    The results can be analysed by attributes like `get_mean_energy()` or
+    `get_magnetic_moments()`.
 
-            mc = MC(len(structure))
-            mc.set_heisenberg_coeff(J*first_shell_tensor)
+    The Hamiltonian H is given in the form:
 
-            mc.run(temperature=300, number_of_iterations=1000)
+    H = -0.5*sum_ij J_ij*(m_i*m_j)^deg + sum_i A_i*m_i^deg
 
-        The results can be analysed by attributes like `get_mean_energy()` or
-        `get_magnetic_moments()`.
-
-        The Hamiltonian H is given in the form:
-
-        H = -0.5*sum_ij J_ij*(m_i*m_j)^deg + sum_i A_i*m_i^deg
-
-        The first coefficients (J_ij) can be inserted with set_heisenberg_coeff and the
-        magnitude dependent terms (A_i) can be set via set_landau_coeff. Beware of the signs for
-        the Heisenberg coefficients.
+    The first coefficients (J_ij) can be inserted with set_heisenberg_coeff and the
+    magnitude dependent terms (A_i) can be set via set_landau_coeff. Beware of the signs for
+    the Heisenberg coefficients.
     """
     cdef MCcpp c_mc
 
@@ -71,8 +75,8 @@ cdef class MC:
                 coeff (float/list/ndarray): Heisenberg coefficient. If a single number is given,
                     the same parameter is applied to all the pairs defined in me and neigh.
                     Instead of giving me and neigh, you can also give a n_atom x n_atom tensor.
-                me (list/ndarray): list of indices i (s. definition in the comment)
-                neigh (list/ndarray): list of indices j (s. definition in the comment)
+                i (list/ndarray): list of indices i (s. definition in the comment)
+                j (list/ndarray): list of indices j (s. definition in the comment)
                 deg (int): polynomial degree
                 index (int): potential index for thermodynamic integration (0 or 1; choose 0 if
                     not thermodynamic integration)
