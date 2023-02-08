@@ -19,9 +19,9 @@ ext = Extension('mc', sources=["mamonca/mc.pyx"], language="c++", extra_compile_
 setup(
     name='mamonca',
     version='0.0.3',
-    description='mamonca - an integrated development environment (IDE) for computational materials science.',
+    description='mamonca - interactive Magnetic Monte Carlo code',
     url='https://github.com/samwaseda/mamonca',
-    author='Max-Planck-Institut für Eisenforschung GmbH - Computational Materials Design (CM) Department',
+    author='Sam Waseda',
     author_email='waseda@mpie.de',
     license='BSD',
     #cmdclass = {'build_ext': my_build_ext}, ext_modules=cythonize("mc.pyx", language_level="3")

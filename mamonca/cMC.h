@@ -20,11 +20,15 @@ class RandomNumberFactory{
     private:
         default_random_engine generator;
         normal_distribution<double> distribution;
+        valarray<double> m_new;
     public:
         valarray<double> on_sphere(int size=3); // size
         double uniform(bool symmetric=true, double max_value=1.0);
         double normal();
         valarray<double> n_on_sphere(int size=3); //size
+        RandomNumberFactory(){
+            m_new.resize(3, 0);
+        }
 } rand_generator;
 
 struct Constants{

@@ -1,4 +1,4 @@
-from mamonca import MC
+from mamonca.mc import MC
 import numpy as np
 import unittest
 
@@ -18,6 +18,11 @@ class TestFull(unittest.TestCase):
 
     def test_energy(self):
         self.assertLess(self.mc.get_energy(), 0)
+
+    def test_number_of_atoms(self):
+        ij = np.loadtxt('neighbors.txt')
+        mc = MC(np.max(ij))
+        self.assertRaises(ValueError, mc.set_heisenberg_coeff, 0.1, *ij)
 
 if __name__ == '__main__':
     unittest.main()

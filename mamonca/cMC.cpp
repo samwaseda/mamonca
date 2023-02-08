@@ -8,7 +8,6 @@ double RandomNumberFactory::uniform(bool symmetric, double max_value){
 }
 
 valarray<double> RandomNumberFactory::on_sphere(int size){
-    valarray<double> m_new(size);
     for(int i=0; i<size; i++)
         m_new[i] = uniform();
     m_new *= uniform()/sqrt((m_new*m_new).sum());
@@ -447,7 +446,13 @@ void cMC::set_heisenberg_coeff(
     if(int(coeff.size())!=int(me.size()) || int(me.size())!=int(neigh.size()))
         throw invalid_argument("Number of coefficients is not the same as the indices");
     for(int i=0; i<int(coeff.size()); i++)
+    {
+        if(max(me.at(i), neigh.at(i))>=n_tot)
+            throw invalid_argument(
+                to_string(max(me.at(i), neigh.at(i)))+"is larger than number of atoms"
+            );
         atom[me.at(i)].set_heisenberg_coeff(atom[neigh.at(i)], coeff.at(i), deg, index);
+    }
 }
 
 void cMC::create_atoms(int number_of_atoms)
