@@ -19,10 +19,25 @@ class TestFull(unittest.TestCase):
     def test_energy(self):
         self.assertLess(self.mc.get_energy(), 0)
 
+    def test_energy_variance(self):
+        self.assertGreater(self.mc.get_energy_variance(), 0)
+
     def test_number_of_atoms(self):
         ij = np.loadtxt('neighbors.txt')
         mc = MC(np.max(ij))
         self.assertRaises(ValueError, mc.set_heisenberg_coeff, 0.1, *ij)
+
+    def test_magnetic_moments(self):
+        m = self.mc.get_magnetic_moments()
+        self.assertLess(np.max(m), 1)
+        self.assertGreater(np.min(m), -1)
+        self.assertAlmostEqual(np.linalg.norm(m, axis=-1).ptp(), 0)
+
+    def test_magnetization(self):
+        m = self.mc.get_magnetization()
+        self.assertEqual(len(m), 1000)
+        self.assertLess(m.max(), 1)
+        self.assertGreater(m.min(), 0)
 
 if __name__ == '__main__':
     unittest.main()
