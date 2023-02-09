@@ -6,9 +6,9 @@ This code allows you to launch Metropolis Monte Carlo simulations via Heisenberg
 
 Download all files and run `python setup.py build_ext --inplace`.
 
-## How to launch a simple calculation
+## First steps:
 
-Suppose we have a bcc Fe system created by [pyiron](http://github.com/pyiron/pyiron) (e.g. via `structure = Project('.').create_structure('Fe', 'bcc', 2.83).repeat(10)`) and a Heisenberg coefficient `J=0.1` (eV). Then the magnetic interactions can be calculated by:
+In the following simple (but complete) example, we create a bcc Fe system using [pyiron](http://github.com/pyiron/pyiron) and launch a Metropolis Monte Carlo simulation with a Heisenberg coefficient `J=0.1` (eV) for the first nearest neighbor pairs:
 
 ```python
 from pyiron import Project
@@ -30,6 +30,7 @@ mc.set_heisenberg_coeff(J*first_shell_tensor.toarray())
 mc.run(temperature=300, number_of_iterations=1000)
 ```
 
-The results can be analysed by attributes like `get_mean_energy()` or `get_magnetic_moments`.
+## How to set inputs and get outputs
 
-For more info, take a look at `mc.pyx`.
+As a rule of thumb, you can set all input parameters via functions starting with `set_`. Similarly, output values can be obtained via functions whose names start with `get_`. Take a look at the list of auto-complete and see their docstrings
+

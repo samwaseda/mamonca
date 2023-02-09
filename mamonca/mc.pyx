@@ -50,15 +50,15 @@ cdef class MC:
 
     def set_landau_coeff(self, coeff, deg, index=0):
         """
-            Args:
-                coeff (float/list/ndarray): Coefficient to the Landau term. If a single number is
-                    given, the same parameter is applied to all the atoms.
-                deg (int): Polynomial degree (usually an even number)
-                index (int): Potential index for thermodynamic integration (0 or 1; choose 0 if
-                    not thermodynamic integration)
+        Args:
+            coeff (float/list/ndarray): Coefficient to the Landau term. If a single number is
+                given, the same parameter is applied to all the atoms.
+            deg (int): Polynomial degree (usually an even number)
+            index (int): Potential index for thermodynamic integration (0 or 1; choose 0 if
+                not thermodynamic integration)
 
-            Comment:
-                Landau term is given by: sum_i coeff_i*m_i^deg
+        Comment:
+            Landau term is given by: sum_i coeff_i*m_i^deg
         """
         coeff = np.array([coeff]).flatten()
         if len(coeff)==1:
