@@ -18,7 +18,7 @@ ext = Extension('mc', sources=["mamonca/mc.pyx"], language="c++", extra_compile_
 
 setup(
     name='mamonca',
-    version='0.0.3',
+    version='0.0.5',
     description='mamonca - interactive Magnetic Monte Carlo code',
     url='https://github.com/samwaseda/mamonca',
     author='Sam Waseda',
