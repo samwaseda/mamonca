@@ -1,4 +1,4 @@
-# Magnetic Metropolis Monte Carlo following classical Boltzmann statistics
+# mamonca - interactive Magnetic Monte Carlo
 
 This code allows you to launch Metropolis Monte Carlo simulations via Heisenberg Landau models (with various polynomial degrees) from a jupyter notebook.
 
