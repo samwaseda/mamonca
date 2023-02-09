@@ -248,7 +248,7 @@ void Atom::set_landau_coeff(double value, int deg, int index=0){
         case 10:
             return landau_func[index].push_back(&decic);
         default:
-            throw invalid_argument("Longitudinal function not found");
+            throw invalid_argument("Landau coefficient not defined");
     }
 }
 

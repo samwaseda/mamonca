@@ -14,6 +14,11 @@ class TestFull(unittest.TestCase):
         cls.mc.set_landau_coeff(0.01, 4)
         cls.mc.run(temperature=300, number_of_iterations=1000)
 
+    def test_invalid_landau_coeff(self):
+        mc = MC(100)
+        self.assertRaises(ValueError, mc.set_landau_coeff, 1, 3)
+        self.assertRaises(ValueError, mc.set_landau_coeff, 1, 12)
+
     def test_acceptance_ratio(self):
         self.assertGreater(self.mc.get_acceptance_ratio(), 0)
         self.assertLess(self.mc.get_acceptance_ratio(), 1)
