@@ -1,0 +1,4 @@
+include mamonca/cMC.cpp
+include mamonca/cMC.h
+include mamonca/cMC.pxd
+include mamonca/mc.pyx

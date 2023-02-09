@@ -14,7 +14,7 @@ class my_build_ext(build_ext):
             pass
         build_ext.build_extensions(self)
 
-ext = Extension('mc', sources=["mamonca/mc.pyx", "mamonca/cMC.cpp", "mamonca/cMC.h", "mamonca/cMC.pxd"], language="c++", extra_compile_args=['-fopenmp'], extra_link_args=['-lgomp'])
+ext = Extension('mc', sources=["mamonca/mc.pyx"], language="c++", extra_compile_args=['-fopenmp'], extra_link_args=['-lgomp'])
 
 setup(
     name='mamonca',
