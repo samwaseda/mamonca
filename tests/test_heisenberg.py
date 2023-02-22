@@ -1,4 +1,4 @@
-from mamonca.mc import MC
+from mamonca import MC
 import numpy as np
 import unittest
 import os
