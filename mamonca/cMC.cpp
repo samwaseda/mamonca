@@ -65,27 +65,27 @@ valarray<double> Square::gradient(valarray<double> &m){
 }
 
 valarray<double> Quartic::gradient(valarray<double> &m){
-    return 4*m.apply([](double x){return x*x;}).sum()*m;
+    return 4.*m.apply([](double x){return x*x;}).sum()*m;
 }
 
 valarray<double> Sextic::gradient(valarray<double> &m){
-    return 6*m.apply([](double x){return x*x*x*x;}).sum()*m;
+    return 6.*m.apply([](double x){return x*x*x*x;}).sum()*m;
 }
 
 valarray<double> Octic::gradient(valarray<double> &m){
-    return 8*m.apply([](double x){return x*x*x*x*x*x;}).sum()*m;
+    return 8.*m.apply([](double x){return x*x*x*x*x*x;}).sum()*m;
 }
 
 valarray<double> Decic::gradient(valarray<double> &m){
-    return 10*m.apply([](double x){return x*x*x*x*x*x*x*x;}).sum()*m;
+    return 10.*m.apply([](double x){return x*x*x*x*x*x*x*x;}).sum()*m;
 }
 
 double Product::value(Atom &neigh, Atom &me){
-    return 0;
+    return 0.;
 }
 
 double Product::diff(Atom &neigh, Atom &me){
-    return 0;
+    return 0.;
 }
 
 valarray<double> Product::gradient(Atom &neigh, Atom &me){
@@ -155,7 +155,7 @@ void Atom::activate_debug(){
 double Atom::get_acceptance_ratio(){
     if(count!=0)
         return acc/(double) count;
-    return 0;
+    return 0.;
 }
 
 double Atom::get_magnitude(int exponent, bool old)
@@ -288,7 +288,7 @@ void Atom::clear_landau_coeff(int index){
 void Atom::propose_new_state(){
     set_m(rand_generator.on_sphere(3), true);
     if(flip && rand()%2==1)
-        m *= -1;
+        m *= -1.;
 }
 
 valarray<double> Atom::delta_m(){
@@ -297,11 +297,11 @@ valarray<double> Atom::delta_m(){
 
 void Atom::rescale_magnitude(double rescale_m, double rescale_phi){
     if (rescale_m==1 && dm>0)
-        dm = 1;
+        dm = 1.;
     else
         dm *= rescale_m;
     if (rescale_phi==1 && dphi>0)
-        dphi = 1;
+        dphi = 1.;
     else
         dphi *= rescale_phi;
 }
