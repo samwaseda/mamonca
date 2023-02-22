@@ -5,7 +5,7 @@ from distutils.command.build_ext import build_ext
 
 
 ext = Extension(
-    'mc',
+    'mamonca',
     sources=["mamonca/mc.pyx"],
     language="c++",
     extra_compile_args=['-fopenmp'],
