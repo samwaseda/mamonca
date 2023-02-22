@@ -1,9 +1,7 @@
 from distutils.core import setup
 from Cython.Build import cythonize
 from distutils.extension import Extension
-
 from distutils.command.build_ext import build_ext
-from distutils.sysconfig import customize_compiler
 
 
 ext = Extension(
