@@ -5,16 +5,14 @@ from distutils.extension import Extension
 from distutils.command.build_ext import build_ext
 from distutils.sysconfig import customize_compiler
 
-class my_build_ext(build_ext):
-    def build_extensions(self):
-        customize_compiler(self.compiler)
-        try:
-            self.compiler.compiler_so.remove("-Wstrict-prototypes")
-        except (AttributeError, ValueError):
-            pass
-        build_ext.build_extensions(self)
 
-ext = Extension('mc', sources=["mamonca/mc.pyx"], language="c++", extra_compile_args=['-fopenmp'], extra_link_args=['-lgomp'])
+ext = Extension(
+    'mc',
+    sources=["mamonca/mc.pyx"],
+    language="c++",
+    extra_compile_args=['-fopenmp'],
+    extra_link_args=['-lgomp']
+)
 
 setup(
     name='mamonca',
@@ -24,6 +22,6 @@ setup(
     author='Sam Waseda',
     author_email='waseda@mpie.de',
     license='BSD',
-    cmdclass={'build_ext': my_build_ext},
+    cmdclass={"build_ext": build_ext},
     ext_modules=cythonize([ext], language_level="3")
 )
