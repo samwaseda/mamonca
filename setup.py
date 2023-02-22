@@ -21,5 +21,6 @@ setup(
     author_email='waseda@mpie.de',
     license='BSD',
     cmdclass={"build_ext": build_ext},
-    ext_modules=cythonize([ext], language_level="3")
+    ext_modules=cythonize([ext], language_level="3"),
+    options={'build': {'build_lib': 'mamonca'}}
 )
