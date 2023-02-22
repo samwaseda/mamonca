@@ -1,5 +1,5 @@
 all:
-	python setup.py build_ext --build-lib=mamonca
+	python setup.py build_ext
 
 clean:
 	rm mamonca/*.so mamonca/mc.cpp
