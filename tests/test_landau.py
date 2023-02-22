@@ -1,13 +1,15 @@
 from mamonca.mc import MC
 import numpy as np
 import unittest
+import os
 
 
 class TestFull(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        ij = np.loadtxt('neighbors.txt')
+        cls.file_location = os.path.dirname(os.path.abspath(__file__))
+        ij = np.loadtxt(os.path.join(cls.file_location, "neighbors.txt"))
         cls.mc = MC(np.max(ij) + 1)
         cls.mc.set_heisenberg_coeff(0.1, *ij)
         cls.mc.set_landau_coeff(-0.1, 2)

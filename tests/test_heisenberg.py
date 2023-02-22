@@ -1,13 +1,15 @@
 from mamonca.mc import MC
 import numpy as np
 import unittest
+import os
 
 
 class TestFull(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        ij = np.loadtxt('neighbors.txt')
+        cls.file_location = os.path.dirname(os.path.abspath(__file__))
+        ij = np.loadtxt(os.path.join(cls.file_location, "neighbors.txt"))
         cls.mc = MC(np.max(ij) + 1)
         cls.mc.set_heisenberg_coeff(0.1, *ij)
         cls.mc.run(temperature=300, number_of_iterations=1000)
@@ -23,7 +25,7 @@ class TestFull(unittest.TestCase):
         self.assertGreater(self.mc.get_energy_variance(), 0)
 
     def test_number_of_atoms(self):
-        ij = np.loadtxt('neighbors.txt')
+        ij = np.loadtxt(os.path.join(self.file_location, "neighbors.txt"))
         mc = MC(np.max(ij))
         self.assertRaises(ValueError, mc.set_heisenberg_coeff, 0.1, *ij)
 

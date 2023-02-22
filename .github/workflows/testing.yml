@@ -39,4 +39,4 @@ jobs:
       shell: bash -l {0}
       run: |
         pip install -e .
-
+        python -m unittest discover tests/
