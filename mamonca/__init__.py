@@ -1,1 +1,1 @@
-from mamonca.mamonca import MC
+from mamonca import MC

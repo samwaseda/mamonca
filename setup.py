@@ -1,7 +1,6 @@
-from distutils.core import setup
 from Cython.Build import cythonize
-from distutils.extension import Extension
-from distutils.command.build_ext import build_ext
+from setuptools.command.build_ext import build_ext
+from setuptools import setup, Extension
 
 
 ext = Extension(
@@ -10,7 +9,6 @@ ext = Extension(
     language="c++",
     extra_compile_args=['-fopenmp'],
     extra_link_args=['-lgomp'],
-    library_dirs=['mamonca'],
 )
 
 setup(
