@@ -33,4 +33,3 @@ mc.run(temperature=300, number_of_iterations=1000)
 ## How to set inputs and get outputs
 
 As a rule of thumb, you can set all input parameters via functions starting with `set_`. Similarly, output values can be obtained via functions whose names start with `get_`. Take a look at the list of auto-complete and see their docstrings
-
