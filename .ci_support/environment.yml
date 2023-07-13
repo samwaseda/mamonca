@@ -4,7 +4,3 @@ channels:
 dependencies:
   - numpy
   - cython
-  - gcc_linux-64
-  - gxx_linux-64
-  - libgcc-ng
-  - libgomp
