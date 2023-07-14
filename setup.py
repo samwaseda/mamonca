@@ -7,7 +7,6 @@ ext = Extension(
     'mamonca',
     sources=["mamonca/mc.pyx"],
     language="c++",
-    extra_compile_args=['-fopenmp'],
     extra_link_args=['-lgomp'],
 )
 
