@@ -502,13 +502,10 @@ bool cMC::thermodynamic_integration(){
 
 void cMC::run_spin_dynamics(double kBT, int threads){
     double mu_s = sqrt(2*constants.damping_parameter*constants.hbar*kBT/constants.delta_t);
-    #pragma omp parallel num_threads(threads)
     {
-        #pragma omp for
         for (int i=0; i<n_tot; i++)
             atom[i].calc_spin_dynamics(
                 constants.damping_parameter, constants.delta_t, mu_s, lambda);
-        #pragma omp for
         for (int i=0; i<n_tot; i++)
             atom[i].update_spin_dynamics();
     }
