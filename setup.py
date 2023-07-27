@@ -12,7 +12,7 @@ ext = Extension(
 
 setup(
     name='mamonca',
-    version='0.0.6',
+    version='0.0.7',
     description='mamonca - interactive Magnetic Monte Carlo code',
     url='https://github.com/samwaseda/mamonca',
     author='Sam Waseda',
