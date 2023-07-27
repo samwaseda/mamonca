@@ -7,6 +7,7 @@ ext = Extension(
     'mamonca',
     sources=["mamonca/mc.pyx"],
     language="c++",
+    extra_compile_args=['-std=c++11'],
 )
 
 setup(
