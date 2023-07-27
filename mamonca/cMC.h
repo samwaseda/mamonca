@@ -53,7 +53,7 @@ class Atom{
         struct UpToDate{
             vector<bool> E, dE;
         } up_to_date;
-        bool E_uptodate[2], dE_uptodate[2], debug, flip;
+        bool debug, flip;
         void update_flag(bool ff=false);
         friend Product;
     public:
