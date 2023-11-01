@@ -12,7 +12,7 @@ In the following simple (but complete) example, we create a bcc Fe system using 
 
 ```python
 from pyiron import Project
-from mc import MC
+from mamonca import MC
 
 structure = Project('.').create.structure.bulk(
     name='Fe',
