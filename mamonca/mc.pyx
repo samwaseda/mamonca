@@ -87,7 +87,7 @@ cdef class MC:
         """
         if i is None and j is None:
             n = self.c_mc.get_number_of_atoms()
-            if isinstance(coeff, np.ndarray | list):
+            if isinstance(coeff, (np.ndarray, list)):
                 if np.array(coeff).shape!=(n, n):
                     raise ValueError(
                         "If i and j are not specified, coeff has to be a 2d"
