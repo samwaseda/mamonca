@@ -23,6 +23,15 @@ class TestFull(unittest.TestCase):
         mc.run(temperature=300, number_of_iterations=100)
         self.assertLess(mc.get_energy(index=0), mc.get_energy(index=1))
 
+    def test_metadynamics(self):
+        mc = MC(self.n)
+        mc.set_heisenberg_coeff(0.1, *self.ij, index=0)
+        mc.set_metadynamics(max_range=1)
+        mc.run(temperature=300, number_of_iterations=100)
+        meta = mc.get_metadynamics_free_energy()
+        self.assertAlmostEqual(np.diff(meta["magnetization"]).ptp(), 0)
+        self.assertLessEqual(meta["free_energy"].max(), 0)
+
 
 if __name__ == '__main__':
     unittest.main()
