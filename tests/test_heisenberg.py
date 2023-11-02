@@ -2,6 +2,7 @@ from mamonca import MC
 import numpy as np
 import unittest
 import os
+from scipy.sparse import coo_matrix
 
 
 class TestFull(unittest.TestCase):
@@ -9,10 +10,26 @@ class TestFull(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.file_location = os.path.dirname(os.path.abspath(__file__))
-        ij = np.loadtxt(os.path.join(cls.file_location, "neighbors.txt"))
-        cls.mc = MC(np.max(ij) + 1)
-        cls.mc.set_heisenberg_coeff(0.1, *ij)
+        cls.ij = np.loadtxt(
+            os.path.join(cls.file_location, "neighbors.txt")
+        ).astype(int)
+        cls.n = np.max(cls.ij) + 1
+        cls.mc = MC(cls.n)
+        cls.mc.set_heisenberg_coeff(0.1, *cls.ij)
         cls.mc.run(temperature=300, number_of_iterations=1000)
+
+    def test_coo_mat(self):
+        data = -0.1 * np.ones(self.ij.shape[1])
+        mat = coo_matrix(
+            (data, (self.ij[0], self.ij[1])),
+            shape=(self.n, self.n),
+        )
+        for i in range(2):
+            mc = MC(self.n)
+            mc.set_heisenberg_coeff(mat)
+            mc.run(100, number_of_iterations=1000)
+            self.assertLess(mc.get_energy(), 0)
+            mat = mat + mat # transforms to csr
 
     def test_acceptance_ratio(self):
         self.assertGreater(self.mc.get_acceptance_ratio(), 0)
