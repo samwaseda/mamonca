@@ -19,7 +19,7 @@ class TestFull(unittest.TestCase):
         cls.mc.run(temperature=300, number_of_iterations=1000)
 
     def test_coo_mat(self):
-        data = -0.1 * np.ones(self.ij.shape[1])
+        data = 0.1 * np.ones(self.ij.shape[1])
         mat = coo_matrix(
             (data, (self.ij[0], self.ij[1])),
             shape=(self.n, self.n),
