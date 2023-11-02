@@ -38,7 +38,6 @@ Internally, each atom points to the magnetic moment of the interacting neighbori
 
 # Acknowledgements
 
-We acknowledge contributions from Brigitta Sipocz, Syrtis Major, and Semyeong
-Oh, and support from Kathryn Johnston during the genesis of this project.
+We gratefully acknowledge the financial support from the German Research Foundation (DFG) under grant HI 1300/15-1 within the DFG-ANR project C-TRAM.
 
 # References
