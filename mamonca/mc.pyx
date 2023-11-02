@@ -84,14 +84,16 @@ cdef class MC:
                 negative sign.
         """
         if i is None and j is None:
-            n = self.c_mc.get_number_of_atoms()
-            if np.array(coeff).shape!=(n, n):
-                raise ValueError(
-                    'If i and j are not specified, coeff has to be a 2d tensor with the length '
-                    + 'equal to the number of atoms in each direction.'
-                )
-            i,j = np.where(coeff!=0)
-            coeff = coeff[coeff!=0]
+            if isinstance(coeff, np.ndarray | list):
+                n = self.c_mc.get_number_of_atoms()
+                if np.array(coeff).shape!=(n, n):
+                    raise ValueError(
+                        "If i and j are not specified, coeff has to be a 2d"
+                        " tensor with the length equal to the number of atoms in"
+                        " each direction."
+                    )
+                i,j = np.where(coeff != 0)
+                coeff = coeff[coeff != 0]
         coeff = np.array([coeff]).flatten()
         i = np.array(i).flatten()
         j = np.array(j).flatten()
