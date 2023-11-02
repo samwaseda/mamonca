@@ -84,8 +84,8 @@ cdef class MC:
                 negative sign.
         """
         if i is None and j is None:
+            n = self.c_mc.get_number_of_atoms()
             if isinstance(coeff, np.ndarray | list):
-                n = self.c_mc.get_number_of_atoms()
                 if np.array(coeff).shape!=(n, n):
                     raise ValueError(
                         "If i and j are not specified, coeff has to be a 2d"
@@ -94,6 +94,18 @@ cdef class MC:
                     )
                 i,j = np.where(coeff != 0)
                 coeff = coeff[coeff != 0]
+            else:
+                if hasattr(coeff, "tocoo"):
+                    coeff = coeff.tocoo()
+                try:
+                    i = coeff.row
+                    j = coeff.col
+                    coeff = coeff.data
+                except AttributeError:
+                    raise ValueError(
+                        "Input can be a sparse matrix or a numpy array of"
+                        f" shape ({n}, {n}) or you must specify i, j and coeff"
+                    )
         coeff = np.asarray([coeff]).flatten()
         i = np.asarray(i).flatten()
         j = np.asarray(j).flatten()
