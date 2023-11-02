@@ -35,7 +35,7 @@ neighbors = structure.get_neighbors()
 first_shell_tensor = neighbors.get_shell_matrix()[0]
 
 mc = MC(len(structure))
-mc.set_heisenberg_coeff(J * first_shell_tensor.toarray())
+mc.set_heisenberg_coeff(J * first_shell_tensor)
 
 mc.run(temperature=300, number_of_iterations=1000)
 ```
