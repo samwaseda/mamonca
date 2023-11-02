@@ -13,7 +13,7 @@ In order to use build it from the repository, run
 ```
 git clone https://github.com/samwaseda/mamonca
 cd mamonca
-python setup.py build_ext --inplace
+python setup.py build_ext --user
 ```
 
 ## First steps:
