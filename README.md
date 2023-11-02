@@ -4,14 +4,24 @@ This code allows you to launch Metropolis Monte Carlo simulations via Heisenberg
 
 ## How to compile
 
-Download all files and run `python setup.py build_ext --inplace`.
+`mamonca` can be installed directly from conda:
+
+```
+conda install -c conda-forge mamonca
+```
+In order to use build it from the repository, run
+```
+git clone https://github.com/samwaseda/mamonca
+cd mamonca
+python setup.py build_ext --inplace
+```
 
 ## First steps:
 
 In the following simple (but complete) example, we create a bcc Fe system using [pyiron](http://github.com/pyiron/pyiron) and launch a Metropolis Monte Carlo simulation with a Heisenberg coefficient `J=0.1` (eV) for the first nearest neighbor pairs:
 
 ```python
-from pyiron import Project
+from pyiron_atomistics import Project
 from mamonca import MC
 
 structure = Project('.').create.structure.bulk(
@@ -25,7 +35,7 @@ neighbors = structure.get_neighbors()
 first_shell_tensor = neighbors.get_shell_matrix()[0]
 
 mc = MC(len(structure))
-mc.set_heisenberg_coeff(J*first_shell_tensor.toarray())
+mc.set_heisenberg_coeff(J * first_shell_tensor.toarray())
 
 mc.run(temperature=300, number_of_iterations=1000)
 ```
