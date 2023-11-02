@@ -1,0 +1,28 @@
+from mamonca import MC
+import numpy as np
+import unittest
+import os
+
+
+class TestFull(unittest.TestCase):
+
+    @classmethod
+    def setUpClass(cls):
+        cls.file_location = os.path.dirname(os.path.abspath(__file__))
+        cls.ij = np.loadtxt(
+            os.path.join(cls.file_location, "neighbors.txt")
+        ).astype(int)
+        cls.n = np.max(cls.ij) + 1
+        cls.mc = MC(cls.n)
+
+    def test_thermodynamic_integration(self):
+        mc = MC(self.n)
+        mc.set_heisenberg_coeff(0.1, *self.ij, index=0)
+        mc.set_heisenberg_coeff(-0.03, *self.ij, index=1)
+        mc.set_lambda(0.5)
+        mc.run(temperature=300, number_of_iterations=100)
+        self.assertLess(mc.get_energy(index=0), mc.get_energy(index=1))
+
+
+if __name__ == '__main__':
+    unittest.main()
