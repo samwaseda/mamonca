@@ -94,12 +94,12 @@ cdef class MC:
                     )
                 i,j = np.where(coeff != 0)
                 coeff = coeff[coeff != 0]
-        coeff = np.array([coeff]).flatten()
-        i = np.array(i).flatten()
-        j = np.array(j).flatten()
-        if len(coeff)==1:
+        coeff = np.asarray([coeff]).flatten()
+        i = np.asarray(i).flatten()
+        j = np.asarray(j).flatten()
+        if len(coeff) == 1:
             coeff = np.tile(coeff, len(i))
-        if len(coeff)!=len(i) or len(i)!=len(j):
+        if not len(coeff) == len(i) == len(j):
             raise ValueError('Length of vectors not the same')
         self.c_mc.set_heisenberg_coeff(coeff, i, j, deg, index)
 
