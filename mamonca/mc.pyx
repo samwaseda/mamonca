@@ -24,7 +24,7 @@ cdef class MC:
     >>> first_shell_tensor = neighbors.get_shell_matrix()[0]
     >>> 
     >>> mc = MC(len(structure))
-    >>> mc.set_heisenberg_coeff(J*first_shell_tensor.toarray())
+    >>> mc.set_heisenberg_coeff(J*first_shell_tensor)
     >>> 
     >>> mc.run(temperature=300, number_of_iterations=1000)
 
@@ -71,33 +71,49 @@ cdef class MC:
     def set_heisenberg_coeff(self, coeff, i=None, j=None, deg=1, index=0):
         """
             Args:
-                coeff (float/list/ndarray): Heisenberg coefficient. If a single number is given,
-                    the same parameter is applied to all the pairs defined in me and neigh.
-                    Instead of giving me and neigh, you can also give a n_atom x n_atom tensor.
-                i (list/ndarray): list of indices i (s. definition in the comment)
-                j (list/ndarray): list of indices j (s. definition in the comment)
+                coeff (float/list/ndarray/scipy.sparse): Heisenberg coefficient.
+                    If a single number is given, the same parameter is applied
+                    to all the pairs defined in me and neigh. Instead of
+                    giving me and neigh, you can also give a n_atom x n_atom
+                    tensor.
+                i (list/ndarray): list of indices i (s. def in the comment)
+                j (list/ndarray): list of indices j (s. def in the comment)
                 deg (int): polynomial degree
-                index (int): potential index for thermodynamic integration (0 or 1; choose 0 if
-                    not thermodynamic integration)
+                index (int): potential index for thermodynamic integration
+                    (0 or 1; choose 0 if not thermodynamic integration)
             Comment:
-                Heisenberg term is given by: -sum_ij coeff_ij*(m_i*m_j)^deg. Beware of the
-                negative sign.
+                Heisenberg term is given by: -sum_ij coeff_ij*(m_i*m_j)^deg.
+                Beware of the negative sign.
         """
         if i is None and j is None:
             n = self.c_mc.get_number_of_atoms()
-            if np.array(coeff).shape!=(n, n):
-                raise ValueError(
-                    'If i and j are not specified, coeff has to be a 2d tensor with the length '
-                    + 'equal to the number of atoms in each direction.'
-                )
-            i,j = np.where(coeff!=0)
-            coeff = coeff[coeff!=0]
-        coeff = np.array([coeff]).flatten()
-        i = np.array(i).flatten()
-        j = np.array(j).flatten()
-        if len(coeff)==1:
+            if isinstance(coeff, (np.ndarray, list)):
+                if np.array(coeff).shape!=(n, n):
+                    raise ValueError(
+                        "If i and j are not specified, coeff has to be a 2d"
+                        " tensor with the length equal to the number of atoms in"
+                        " each direction."
+                    )
+                i,j = np.where(coeff != 0)
+                coeff = coeff[coeff != 0]
+            else:
+                if hasattr(coeff, "tocoo"):
+                    coeff = coeff.tocoo()
+                try:
+                    i = coeff.row
+                    j = coeff.col
+                    coeff = coeff.data
+                except AttributeError:
+                    raise ValueError(
+                        "Input can be a sparse matrix or a numpy array of"
+                        f" shape ({n}, {n}) or you must specify i, j and coeff"
+                    )
+        coeff = np.asarray([coeff]).flatten()
+        i = np.asarray(i).flatten()
+        j = np.asarray(j).flatten()
+        if len(coeff) == 1:
             coeff = np.tile(coeff, len(i))
-        if len(coeff)!=len(i) or len(i)!=len(j):
+        if not len(coeff) == len(i) == len(j):
             raise ValueError('Length of vectors not the same')
         self.c_mc.set_heisenberg_coeff(coeff, i, j, deg, index)
 
