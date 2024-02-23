@@ -26,5 +26,5 @@ setup(
     cmdclass={"build_ext": build_ext},
     ext_modules=cythonize([ext], language_level="3"),
     options={'build': {'build_lib': 'mamonca'}},
-    install_requires=["numpy"],
+    install_requires=["numpy, cython"],
 )
