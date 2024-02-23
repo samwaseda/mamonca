@@ -42,8 +42,13 @@ struct Magnitude;;
 
 class Atom{
     private:
+        /* Some variables have two values for the two potentials of the      */
+        /* thermodynamic integration. When thermodynamic integration is not  */
+        /* activated, only the first value is used.                          */
         double mabs, mabs_tmp, E_current[2], dE_current[2], dm, dphi, mmax;
         valarray<double> gradient;
+        /* Heisenberg coefficients (i.e. pairwise interactions) and Landau   */
+        /* coefficients (i.e. on-site coefficients)                          */
         vector<double> heisen_coeff[2], landau_coeff[2];
         vector<Magnitude*> landau_func[2];
         vector<Product*> heisen_func[2];
@@ -78,8 +83,13 @@ class Atom{
         void clear_heisenberg_coeff(int);
         void activate_debug();
         void propose_new_state();
+        /* This is the function that defines the maximum magnitude of the    */
+        /* magnetic moment length and the angle change at each step. These   */
+        /* values should be adjusted to have a good acceptance ratio (around */
+        /* 0.33?)                                                            */
         void rescale_magnitude(double, double);
         void set_magnitude(double, double, bool flip_in=true);
+        // Consistency check only in the debugging mode
         void check_consistency();
 };
 
