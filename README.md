@@ -49,6 +49,8 @@ mc.set_heisenberg_coeff(J * first_shell_tensor)
 mc.run(temperature=300, number_of_iterations=1000)
 ```
 
+More complete list of examples can be found in `notebooks/first_steps.ipynb`
+
 ## How to set inputs and get outputs
 
 As a rule of thumb, you can set all input parameters via functions starting with `set_`. Similarly, output values can be obtained via functions whose names start with `get_`. Most notably, you can get all basic output via `get_output()` in a dictionary. Take a look at the list of auto-complete and see their docstrings
