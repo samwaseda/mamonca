@@ -56,3 +56,4 @@ As a rule of thumb, you can set all input parameters via functions starting with
 ## Notes
 
 - Currently only Linux installation is supported
+- You can run tests located in the `tests` folder

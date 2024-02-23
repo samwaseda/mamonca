@@ -527,26 +527,30 @@ void cMC::run_mc(double kBT){
         id_rand = selectable_id.at(rand()%selectable_id.size());
         atom[id_rand].propose_new_state();
         double dEE = atom[id_rand].dE();
+        // Append metadynamics energy if defined
         if (meta.initialized)
             dEE += meta.get_biased_energy(
                 m_norm(magnetization+atom[id_rand].delta_m()/(double)n_tot),
                 sqrt((magnetization*magnetization).sum()));
+        // Suggest a new state
         update_magnetization(id_rand);
         if(thermodynamic_integration())
             dEE = (1-lambda)*dEE+lambda*atom[id_rand].dE(1);
-        if(metropolis(kBT, dEE))
+        // Metropolis step
+        if(metropolis(kBT, dEE)) // Accepted
         {
-            acc++;
+            acc++; // Acceptance ratio
             dEE_tot.at(0) += atom[id_rand].dE();
             if(thermodynamic_integration())
                 dEE_tot.at(1) += atom[id_rand].dE(1);
         }
-        else
+        else /* Rejected */
         {
             update_magnetization(id_rand, true);
             atom[id_rand].revoke();
         }
     }
+    // Energy consistency only for debugging
     for(int i=0; debug_mode && i<2; i++)
     {
         EE_tot[i] += get_energy(i);
