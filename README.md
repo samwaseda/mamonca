@@ -26,7 +26,7 @@ python setup.py build_ext --user
 
 ## First steps:
 
-In the following simple (but complete) example, we create a bcc Fe system using [pyiron](http://github.com/pyiron/pyiron) and launch a Metropolis Monte Carlo simulation with a Heisenberg coefficient `J=0.1` (eV) for the first nearest neighbor pairs:
+In the following simple (but complete) example, we create a bcc Fe system using [pyiron](http://github.com/pyiron/pyiron) (install via `conda install pyiron`) and launch a Metropolis Monte Carlo simulation with a Heisenberg coefficient `J=0.1` (eV) for the first nearest neighbor pairs:
 
 ```python
 from pyiron_atomistics import Project
