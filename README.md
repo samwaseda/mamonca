@@ -26,7 +26,7 @@ python setup.py build_ext --user
 
 ## First steps:
 
-In the following simple (but complete) example, we create a bcc Fe system using [pyiron](http://github.com/pyiron/pyiron) and launch a Metropolis Monte Carlo simulation with a Heisenberg coefficient `J=0.1` (eV) for the first nearest neighbor pairs:
+In the following simple (but complete) example, we create a bcc Fe system using [pyiron](http://github.com/pyiron/pyiron) (install via `conda install pyiron`) and launch a Metropolis Monte Carlo simulation with a Heisenberg coefficient `J=0.1` (eV) for the first nearest neighbor pairs:
 
 ```python
 from pyiron_atomistics import Project
@@ -49,10 +49,13 @@ mc.set_heisenberg_coeff(J * first_shell_tensor)
 mc.run(temperature=300, number_of_iterations=1000)
 ```
 
+More complete list of examples can be found in `notebooks/first_steps.ipynb`
+
 ## How to set inputs and get outputs
 
-As a rule of thumb, you can set all input parameters via functions starting with `set_`. Similarly, output values can be obtained via functions whose names start with `get_`. Most notably, you can get all basic output via `get_output()` in a dictionary. Take a look at the list of auto-complete and see their docstrings
+As a rule of thumb, you can set all input parameters via functions starting with `set_`. Similarly, output values can be obtained via functions whose names start with `get_`. Most notably, you can get all basic output values via `get_output()` in a dictionary. Otherwise, take a look at the list of auto-complete and see their docstrings
 
 ## Notes
 
 - Currently only Linux installation is supported
+- You can run tests located in the `tests` folder
