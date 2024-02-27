@@ -15,7 +15,7 @@ with open('README.md') as readme_file:
 
 setup(
     name='mamonca',
-    version='0.0.7',
+    version='0.0.8',
     description='mamonca - interactive Magnetic Monte Carlo code',
     long_description=readme,
     long_description_content_type='text/markdown',
@@ -26,5 +26,10 @@ setup(
     cmdclass={"build_ext": build_ext},
     ext_modules=cythonize([ext], language_level="3"),
     options={'build': {'build_lib': 'mamonca'}},
-    install_requires=["numpy", "cython"],
+    setup_requires=[
+        # Setuptools 18.0 properly handles Cython extensions.
+        'setuptools>=18.0',
+        'cython',
+        'numpy',
+    ],
 )
