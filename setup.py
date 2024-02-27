@@ -1,4 +1,3 @@
-from Cython.Build import cythonize
 from setuptools.command.build_ext import build_ext
 from setuptools import setup, Extension
 
@@ -24,7 +23,7 @@ setup(
     author_email='waseda@mpie.de',
     license='BSD',
     cmdclass={"build_ext": build_ext},
-    ext_modules=cythonize([ext], language_level="3"),
+    ext_modules=[ext],
     options={'build': {'build_lib': 'mamonca'}},
     setup_requires=[
         # Setuptools 18.0 properly handles Cython extensions.
