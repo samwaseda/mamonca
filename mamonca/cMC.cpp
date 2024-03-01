@@ -58,6 +58,12 @@ double power(double x, int exponent){
     }
 }
 
+//
+// Depending on the usage, a magnitude dependent term can be defined and
+// implemented here, in which case the value itself and the gradient must
+// be defined
+//
+
 double Magnitude::value(double xxx){return 0;}
 double Square::value(double xxx){ return xxx*xxx; }
 double Quartic::value(double xxx){ return square.value(xxx)*square.value(xxx); }
@@ -88,6 +94,12 @@ valarray<double> Octic::gradient(valarray<double> &m){
 valarray<double> Decic::gradient(valarray<double> &m){
     return 10.*m.apply([](double x){return x*x*x*x*x*x*x*x;}).sum()*m;
 }
+
+//
+// Just like for magnitude, pairwise interactions can be defined here
+// if some expert users wish to defined their own Hamiltonian, in which
+// case the value itself and the magnitude must be defined
+//
 
 double Product::value(Atom &neigh, Atom &me){
     return 0.;
@@ -152,6 +164,7 @@ Atom::Atom() : mabs(1), mmax(100), acc(0), count(0), debug(false)
     update_flag(false);
 }
 
+// Check if the energy values are up to date
 void Atom::update_flag(bool ff){
     up_to_date.E.assign(2, ff);
     up_to_date.dE.assign(2, ff);
@@ -230,7 +243,8 @@ void Atom::set_m(valarray<double> m_new, bool diff){
 void Atom::check_consistency() {
     if ( abs(sqrt((m*m).sum())-abs(mabs))>1.0e-8 )
         throw invalid_argument(
-            "mabs: "+to_string(sqrt((m*m).sum()))+" vs. "+to_string(abs(mabs)));
+            "mabs: "+to_string(sqrt((m*m).sum()))+" vs. "+to_string(abs(mabs))
+        );
 }
 
 void Atom::revoke(){
@@ -511,7 +525,7 @@ bool cMC::thermodynamic_integration(){
     return false;
 }
 
-void cMC::run_spin_dynamics(double kBT, int threads){
+void cMC::run_spin_dynamics(double kBT){
     double mu_s = sqrt(2*constants.damping_parameter*constants.hbar*kBT/constants.delta_t);
     {
         for (int i=0; i<n_tot; i++)
@@ -621,7 +635,7 @@ double cMC::run_gradient_descent(int max_iter, double step_size, double decremen
     return residual_max;
 }
 
-void cMC::run(double T_in, int number_of_iterations, int threads){
+void cMC::run(double T_in, int number_of_iterations){
     double kBT = constants.kB*T_in;
     vector<double> dEE_tot;
     auto begin = std::chrono::high_resolution_clock::now();
@@ -634,7 +648,7 @@ void cMC::run(double T_in, int number_of_iterations, int threads){
     for(int iter=0; iter<number_of_iterations; iter++)
     {
         if (spin_dynamics_flag)
-            run_spin_dynamics(kBT, threads);
+            run_spin_dynamics(kBT);
         else
             run_mc(kBT);
         magnetization_hist.push_back(m_norm(magnetization));
