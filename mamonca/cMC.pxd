@@ -11,7 +11,7 @@ cdef extern from "cMC.h":
         void set_heisenberg_coeff(vector[double], vector[int], vector[int], int, int) except +
         void clear_landau_coeff(int) except +
         void clear_heisenberg_coeff(int) except +
-        void run(double, int, int) except +
+        void run(double, int) except +
         void activate_debug()
         vector[double] get_magnetic_moments()
         vector[double] get_magnetic_gradients()

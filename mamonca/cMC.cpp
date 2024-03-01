@@ -610,6 +610,7 @@ double cMC::get_energy(int index=0){
     return EE;
 }
 
+// Gradient descent to minimize the energy
 double cMC::run_gradient_descent(int max_iter, double step_size, double decrement, double diff)
 {
     reset();
@@ -619,9 +620,12 @@ double cMC::run_gradient_descent(int max_iter, double step_size, double decremen
         dot_product = 0;
         for(int i_atom=0; i_atom<n_tot; i_atom++)
         {
+            // if dot_product is negative, it means the step size is too large,
+            // otherwise it is too small
             dot_product += atom[i_atom].run_gradient_descent(
                 step_size, lambda*thermodynamic_integration());
             residual = atom[i_atom].get_gradient_residual();
+            // maximum residual for the convergence
             if(i_atom==0 || residual_max<residual)
                 residual_max = residual;
         }
@@ -635,6 +639,7 @@ double cMC::run_gradient_descent(int max_iter, double step_size, double decremen
     return residual_max;
 }
 
+// run for both MC and spin dynamics
 void cMC::run(double T_in, int number_of_iterations){
     double kBT = constants.kB*T_in;
     vector<double> dEE_tot;
@@ -647,6 +652,7 @@ void cMC::run(double T_in, int number_of_iterations){
     }
     for(int iter=0; iter<number_of_iterations; iter++)
     {
+        // In both cases the number of steps corresponds to the number of atoms
         if (spin_dynamics_flag)
             run_spin_dynamics(kBT);
         else
@@ -660,10 +666,12 @@ void cMC::run(double T_in, int number_of_iterations){
     steps_per_second = n_tot*number_of_iterations/double(duration.count())*1.0e6;
 }
 
+// Used only for external tools
 double cMC::get_steps_per_second(){
     return (double)steps_per_second;
 }
 
+// Used only for external tools
 vector<double> cMC::get_magnetic_moments(){
     vector<double> m(n_tot*3);
     for(int i_atom=0; i_atom<n_tot; i_atom++)
@@ -672,6 +680,7 @@ vector<double> cMC::get_magnetic_moments(){
     return m;
 }
 
+// Used only for external tools
 vector<double> cMC::get_magnetic_gradients(){
     vector<double> m(n_tot*3);
     valarray<double> grad(3);
@@ -684,8 +693,10 @@ vector<double> cMC::get_magnetic_gradients(){
     return m;
 }
 
+// Set the initial magnetic moments
 void cMC::set_magnetic_moments(vector<double> m_in)
 {
+    // Check whether there are 3 * n_atoms entries
     if(int(m_in.size())!=3*n_tot)
         throw invalid_argument("Length of magnetic moments not correct");
     for(int i_atom=0; i_atom<n_tot; i_atom++)
@@ -696,20 +707,24 @@ void cMC::set_magnetic_moments(vector<double> m_in)
     reset();
 }
 
+// Used only for external tools
 double cMC::get_mean_energy(int index){
     return E_tot.E_mean(index);
 }
 
+// Used only for external tools
 double cMC::get_energy_variance(int index){
     return E_tot.E_var(index);
 }
 
+// Used only for external tools
 double cMC::get_acceptance_ratio(){
     if(MC_count==0)
         return 0;
     return acc/(double)MC_count;
 } 
 
+// Used only for external tools
 vector<double> cMC::get_acceptance_ratios(){
     vector<double> v(n_tot);
     for(int i=0; i<n_tot; i++)
@@ -719,6 +734,7 @@ vector<double> cMC::get_acceptance_ratios(){
 
 void cMC::set_magnitude(vector<double> dm, vector<double> dphi, vector<int> flip)
 {
+    // Check whether magnitude is defined for all atoms
     if(int(dm.size())!=int(dphi.size()) || n_tot!=int(dm.size()))
         throw invalid_argument("Length of vectors not consistent");
     for(int i=0; i<n_tot; i++)
@@ -742,13 +758,22 @@ void cMC::switch_spin_dynamics(bool on, double damping_parameter, double delta_t
     constants.delta_t = delta_t;
 }
 
-void cMC::set_metadynamics(double aa, double bb, double cc, int dd, double ee, int ff)
+    
+void cMC::set_metadynamics(
+    double max_range_in,
+    double energy_increment_in,
+    double length_scale_in,
+    int bins,
+    double cutoff_in,
+    int derivative
+)
 {
-    meta.set_metadynamics(aa, bb, cc, dd, ee ,ff);
+    meta.set_metadynamics(max_range_in, energy_increment_in, length_scale_in, bins, cutoff_in, derivative);
 }
 
 void cMC::update_magnetization(int mc_id, bool backward)
 {
+    // backward is used for not-accepted steps
     if (backward)
         magnetization -= atom[mc_id].delta_m()/(double)n_tot;
     else
