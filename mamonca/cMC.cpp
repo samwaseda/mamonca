@@ -433,6 +433,7 @@ double average_energy::E_var(int index=0){
 
 void average_energy::reset()
 {
+    // Clear statistics
     EE.assign(2, 0);
     E_sum.assign(2, 0);
     EE_sq.assign(2, 0);
@@ -766,9 +767,10 @@ void cMC::set_metadynamics(
     int bins,
     double cutoff_in,
     int derivative
-)
-{
-    meta.set_metadynamics(max_range_in, energy_increment_in, length_scale_in, bins, cutoff_in, derivative);
+) {
+    meta.set_metadynamics(
+        max_range_in, energy_increment_in, length_scale_in, bins, cutoff_in, derivative
+    );
 }
 
 void cMC::update_magnetization(int mc_id, bool backward)
@@ -780,6 +782,7 @@ void cMC::update_magnetization(int mc_id, bool backward)
         magnetization += atom[mc_id].delta_m()/(double)n_tot;
 }
 
+// Used only for external tools
 vector<double> cMC::get_magnetization(){
     return magnetization_hist;
 }
@@ -790,6 +793,7 @@ vector<double> cMC::get_histogram(int derivative){
 
 void cMC::reset()
 {
+    // Reset statistics
     acc = 0;
     MC_count = 0;
     E_tot.reset();
@@ -836,11 +840,15 @@ void Metadynamics::set_metadynamics(
     denominator = length_scale_in*length_scale_in*2;
     hist.assign(bins, 0);
     cutoff = cutoff_in*length_scale_in;
+    // Whether to use the derivative of the free energy surface to avoid discontinuity
+    // between bins. From the computational point of view, it makes little sense to
+    // not use derivative
     use_derivative = false;
     if (derivative != 0)
         use_derivative = true;
 }
 
+// Give the gradient at the given magnetic moment. Only used for external tools
 double Metadynamics::get_biased_gradient(double m){
     if (!initialized)
         throw invalid_argument("metadynamics not initialized yet");
@@ -852,6 +860,7 @@ double Metadynamics::get_biased_gradient(double m){
     return hist.at(int(m*0.5/mass));
 }
 
+// Give the energy value at the given magnetic moment. Only used for external tools
 double Metadynamics::get_biased_energy(double m_new, double m_tmp){
     if (!initialized)
         throw invalid_argument("metadynamics not initialized yet");
@@ -890,14 +899,19 @@ vector<double> Metadynamics::get_histogram(vector<double>& magnetization, int de
     if (derivative!=0 && !use_derivative)
         throw invalid_argument("derivative can be taken only if use_derivative is activated");
     vector<double> m_range(hist.size());
+    // First n values are the positions of the magnetic moments
     for (int i=0; i<int(m_range.size()); i++)
         m_range.at(i) = max_range*(0.5+i)/m_range.size();
     if (!use_derivative || derivative!=0)
     {
+        // Second n values are the hist values, which means the derivative
+        // of the free energy surface.
         m_range.insert( m_range.end(), hist.begin(), hist.end() );
         return m_range;
     }
     vector<double> h_tmp (hist.size(), 0);
+    // If the user wishes, they can also get the free energy values, which are not
+    // stored in mamonca, so they must be calculated here.
     for (auto m: magnetization)
         for (int i=i_min(m); i<i_max(m); i++)
             h_tmp.at(i) += gauss_exp(m, i);
