@@ -1,5 +1,6 @@
 #include "cMC.h"
 
+// Random number generator for the Monte Carlo moves
 double RandomNumberFactory::uniform(bool symmetric, double max_value){
     if (symmetric)
         return max_value*(1.0-2.0*((double)rand()/(double)RAND_MAX));
@@ -7,29 +8,37 @@ double RandomNumberFactory::uniform(bool symmetric, double max_value){
         return max_value*((double)rand()/(double)RAND_MAX);
 }
 
+// Vector of random numbers of length `size`
+// whose magnitude is given between -1 and 1
 valarray<double> RandomNumberFactory::on_sphere(int size){
     for(int i=0; i<size; i++)
-        m_new[i] = uniform();
+        m_new[i] = normal();
     m_new *= uniform()/sqrt((m_new*m_new).sum());
     return m_new;
 }
 
+// Random number according to normal distribution
 double RandomNumberFactory::normal(){
     return distribution(generator);
 }
 
+// Vector of random numbers of length `size`
+// with magnitude distributed by normal distribution
 valarray<double> RandomNumberFactory::n_on_sphere(int size){
     return normal()*on_sphere(size);
 }
 
+// Norm of a vector
 double m_norm(valarray<double> mm){
     return sqrt((mm*mm).sum());
 }
 
+// Cross product of two vectors
 valarray<double> m_cross(valarray<double>& m_one, valarray<double> m_two){
     return m_one.cshift(1)*m_two.cshift(2)-m_one.cshift(2)*m_two.cshift(1);
 }
 
+// Power function to accelerate calculations
 double power(double x, int exponent){
     switch(exponent){
         case 1:
@@ -202,11 +211,13 @@ void Atom::set_m(valarray<double> m_new, bool diff){
     update_flag(false);
     mabs_tmp = mabs;
     m_tmp = m;
-    if(diff && abs(dm-1)+abs(dphi-1)==0)
-        m += m_new;
-    else if(diff){
-        m += dphi*m_new;
-        m *= m_norm(m_tmp+dm*m_new)/sqrt((m*m).sum());
+    if(diff){
+        if(abs(dm-1)+abs(dphi-1)==0)
+            m += m_new;
+        else{
+            m += dphi*m_new;
+            m *= m_norm(m_tmp+dm*m_new)/sqrt((m*m).sum());
+        }
     }
     else{
         m = m_new;
