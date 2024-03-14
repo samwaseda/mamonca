@@ -192,7 +192,7 @@ cdef class MC:
                 'steps_per_second': self.get_steps_per_second()}
 
 
-    def run(self, temperature, number_of_iterations=1, reset=True, threads=1):
+    def run(self, temperature, number_of_iterations=1, reset=True):
         """
             Args:
                 temperature (float): Temperature in K
@@ -202,7 +202,7 @@ cdef class MC:
         """
         if reset:
             self.c_mc.reset()
-        self.c_mc.run(temperature, number_of_iterations, threads)
+        self.c_mc.run(temperature, number_of_iterations)
 
     def get_acceptance_ratio(self, individual=False):
         """
