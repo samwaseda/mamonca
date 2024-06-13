@@ -31,10 +31,10 @@ class RandomNumberFactory{
 } rand_generator;
 
 struct Constants{
-    const double hbar = 0.6582119569;
-    const double kB = 8.617333262145e-5;
+    const double hbar = 0.6582119569;  // eV * fs
+    const double kB = 8.617333262145e-5;  // eV / K
     double damping_parameter = 8.0e-3;
-    double delta_t = 1.0e-3;
+    double delta_t = 1.0e-3;  // fs
 } constants;
 
 struct Product;
