@@ -527,14 +527,12 @@ bool cMC::thermodynamic_integration(){
 }
 
 void cMC::run_spin_dynamics(double kBT){
-    double mu_s = sqrt(2*constants.damping_parameter*constants.hbar*kBT/constants.delta_t);
-    {
-        for (int i=0; i<n_tot; i++)
-            atom[i].calc_spin_dynamics(
-                constants.damping_parameter, constants.delta_t, mu_s, lambda);
-        for (int i=0; i<n_tot; i++)
-            atom[i].update_spin_dynamics();
-    }
+    double mu_s = sqrt(18*constants.damping_parameter*constants.hbar*kBT/constants.delta_t);
+    for (int i=0; i<n_tot; i++)
+        atom[i].calc_spin_dynamics(
+            constants.damping_parameter, constants.delta_t, mu_s, lambda);
+    for (int i=0; i<n_tot; i++)
+        atom[i].update_spin_dynamics();
     E_tot.add(get_energy(0), true);
     if(thermodynamic_integration())
         E_tot.add(get_energy(1), true);
