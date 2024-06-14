@@ -28,6 +28,7 @@ jobs:
           hashFiles('.ci_support/environment.yml') }}
     - uses: conda-incubator/setup-miniconda@v2
       with:
+        miniforge-variant: Mambaforge
         activate-environment: mamonca-test
         channel-priority: strict
         environment-file: .ci_support/environment.yml
