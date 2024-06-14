@@ -21,20 +21,20 @@ class RandomNumberFactory{
         normal_distribution<double> distribution;
         valarray<double> m_new;
     public:
-        valarray<double> on_sphere(int size=3); // size
+        valarray<double> on_sphere(int size=3);
         double uniform(bool symmetric=true, double max_value=1.0);
         double normal();
-        valarray<double> n_on_sphere(int size=3); //size
+        valarray<double> n_on_sphere(int size=3);
         RandomNumberFactory(){
             m_new.resize(3, 0);
         }
 } rand_generator;
 
 struct Constants{
-    const double hbar = 0.6582119569;
-    const double kB = 8.617333262145e-5;
+    const double hbar = 0.6582119569;  // eV * fs
+    const double kB = 8.617333262145e-5;  // eV / K
     double damping_parameter = 8.0e-3;
-    double delta_t = 1.0e-3;
+    double delta_t = 1.0e-3;  // fs
 } constants;
 
 struct Product;
@@ -134,7 +134,7 @@ class cMC{
         average_energy E_tot;
         bool thermodynamic_integration();
         void run_mc(double);
-        void run_spin_dynamics(double, int);
+        void run_spin_dynamics(double);
         bool metropolis(double, double);
         vector<int> selectable_id;
         valarray<double> magnetization;
@@ -147,7 +147,7 @@ class cMC{
         ~cMC();
         void create_atoms(int);
         void activate_debug();
-        void run(double, int number_of_iterations=1, int threads=1);
+        void run(double, int number_of_iterations=1);
         void set_lambda(double);
         vector<double> get_magnetic_moments();
         vector<double> get_magnetic_gradients();
@@ -178,6 +178,9 @@ class cMC{
         vector<double> get_histogram(int);
 };
 
+//
+// On-site longitudinal component. Value and gradient must be defined
+//
 struct Magnitude{
     virtual double value(double);
     virtual valarray<double> gradient(valarray<double>&);
@@ -208,6 +211,10 @@ struct Decic : Magnitude {
     valarray<double> gradient(valarray<double>&);
 } decic;
 
+//
+// Pairwise interactions. Just like for Magnitude,
+// value and gradient must be defined
+//
 struct Product{
     virtual double value(Atom&, Atom&);
     virtual double diff(Atom&, Atom&);

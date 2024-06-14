@@ -1,5 +1,6 @@
 #include "cMC.h"
 
+// Random number generator for the Monte Carlo moves
 double RandomNumberFactory::uniform(bool symmetric, double max_value){
     if (symmetric)
         return max_value*(1.0-2.0*((double)rand()/(double)RAND_MAX));
@@ -7,29 +8,37 @@ double RandomNumberFactory::uniform(bool symmetric, double max_value){
         return max_value*((double)rand()/(double)RAND_MAX);
 }
 
+// Vector of random numbers of length `size`
+// whose magnitude is given between -1 and 1
 valarray<double> RandomNumberFactory::on_sphere(int size){
     for(int i=0; i<size; i++)
-        m_new[i] = uniform();
+        m_new[i] = normal();
     m_new *= uniform()/sqrt((m_new*m_new).sum());
     return m_new;
 }
 
+// Random number according to normal distribution
 double RandomNumberFactory::normal(){
     return distribution(generator);
 }
 
+// Vector of random numbers of length `size`
+// with magnitude distributed by normal distribution
 valarray<double> RandomNumberFactory::n_on_sphere(int size){
     return normal()*on_sphere(size);
 }
 
+// Norm of a vector
 double m_norm(valarray<double> mm){
     return sqrt((mm*mm).sum());
 }
 
+// Cross product of two vectors
 valarray<double> m_cross(valarray<double>& m_one, valarray<double> m_two){
     return m_one.cshift(1)*m_two.cshift(2)-m_one.cshift(2)*m_two.cshift(1);
 }
 
+// Power function to accelerate calculations
 double power(double x, int exponent){
     switch(exponent){
         case 1:
@@ -48,6 +57,12 @@ double power(double x, int exponent){
             return exp(exponent*log(x));
     }
 }
+
+//
+// Depending on the usage, a magnitude dependent term can be defined and
+// implemented here, in which case the value itself and the gradient must
+// be defined
+//
 
 double Magnitude::value(double xxx){return 0;}
 double Square::value(double xxx){ return xxx*xxx; }
@@ -79,6 +94,12 @@ valarray<double> Octic::gradient(valarray<double> &m){
 valarray<double> Decic::gradient(valarray<double> &m){
     return 10.*m.apply([](double x){return x*x*x*x*x*x*x*x;}).sum()*m;
 }
+
+//
+// Just like for magnitude, pairwise interactions can be defined here
+// if some expert users wish to defined their own Hamiltonian, in which
+// case the value itself and the magnitude must be defined
+//
 
 double Product::value(Atom &neigh, Atom &me){
     return 0.;
@@ -143,6 +164,7 @@ Atom::Atom() : mabs(1), mmax(100), acc(0), count(0), debug(false)
     update_flag(false);
 }
 
+// Check if the energy values are up to date
 void Atom::update_flag(bool ff){
     up_to_date.E.assign(2, ff);
     up_to_date.dE.assign(2, ff);
@@ -202,11 +224,13 @@ void Atom::set_m(valarray<double> m_new, bool diff){
     update_flag(false);
     mabs_tmp = mabs;
     m_tmp = m;
-    if(diff && abs(dm-1)+abs(dphi-1)==0)
-        m += m_new;
-    else if(diff){
-        m += dphi*m_new;
-        m *= m_norm(m_tmp+dm*m_new)/sqrt((m*m).sum());
+    if(diff){
+        if(abs(dm-1)+abs(dphi-1)==0)
+            m += m_new;
+        else{
+            m += dphi*m_new;
+            m *= m_norm(m_tmp+dm*m_new)/sqrt((m*m).sum());
+        }
     }
     else{
         m = m_new;
@@ -219,7 +243,8 @@ void Atom::set_m(valarray<double> m_new, bool diff){
 void Atom::check_consistency() {
     if ( abs(sqrt((m*m).sum())-abs(mabs))>1.0e-8 )
         throw invalid_argument(
-            "mabs: "+to_string(sqrt((m*m).sum()))+" vs. "+to_string(abs(mabs)));
+            "mabs: "+to_string(sqrt((m*m).sum()))+" vs. "+to_string(abs(mabs))
+        );
 }
 
 void Atom::revoke(){
@@ -408,6 +433,7 @@ double average_energy::E_var(int index=0){
 
 void average_energy::reset()
 {
+    // Clear statistics
     EE.assign(2, 0);
     E_sum.assign(2, 0);
     EE_sq.assign(2, 0);
@@ -500,15 +526,13 @@ bool cMC::thermodynamic_integration(){
     return false;
 }
 
-void cMC::run_spin_dynamics(double kBT, int threads){
-    double mu_s = sqrt(2*constants.damping_parameter*constants.hbar*kBT/constants.delta_t);
-    {
-        for (int i=0; i<n_tot; i++)
-            atom[i].calc_spin_dynamics(
-                constants.damping_parameter, constants.delta_t, mu_s, lambda);
-        for (int i=0; i<n_tot; i++)
-            atom[i].update_spin_dynamics();
-    }
+void cMC::run_spin_dynamics(double kBT){
+    double mu_s = sqrt(18*constants.damping_parameter*constants.hbar*kBT/constants.delta_t);
+    for (int i=0; i<n_tot; i++)
+        atom[i].calc_spin_dynamics(
+            constants.damping_parameter, constants.delta_t, mu_s, lambda);
+    for (int i=0; i<n_tot; i++)
+        atom[i].update_spin_dynamics();
     E_tot.add(get_energy(0), true);
     if(thermodynamic_integration())
         E_tot.add(get_energy(1), true);
@@ -585,6 +609,7 @@ double cMC::get_energy(int index=0){
     return EE;
 }
 
+// Gradient descent to minimize the energy
 double cMC::run_gradient_descent(int max_iter, double step_size, double decrement, double diff)
 {
     reset();
@@ -594,9 +619,12 @@ double cMC::run_gradient_descent(int max_iter, double step_size, double decremen
         dot_product = 0;
         for(int i_atom=0; i_atom<n_tot; i_atom++)
         {
+            // if dot_product is negative, it means the step size is too large,
+            // otherwise it is too small
             dot_product += atom[i_atom].run_gradient_descent(
                 step_size, lambda*thermodynamic_integration());
             residual = atom[i_atom].get_gradient_residual();
+            // maximum residual for the convergence
             if(i_atom==0 || residual_max<residual)
                 residual_max = residual;
         }
@@ -610,7 +638,8 @@ double cMC::run_gradient_descent(int max_iter, double step_size, double decremen
     return residual_max;
 }
 
-void cMC::run(double T_in, int number_of_iterations, int threads){
+// run for both MC and spin dynamics
+void cMC::run(double T_in, int number_of_iterations){
     double kBT = constants.kB*T_in;
     vector<double> dEE_tot;
     auto begin = std::chrono::high_resolution_clock::now();
@@ -622,8 +651,9 @@ void cMC::run(double T_in, int number_of_iterations, int threads){
     }
     for(int iter=0; iter<number_of_iterations; iter++)
     {
+        // In both cases the number of steps corresponds to the number of atoms
         if (spin_dynamics_flag)
-            run_spin_dynamics(kBT, threads);
+            run_spin_dynamics(kBT);
         else
             run_mc(kBT);
         magnetization_hist.push_back(m_norm(magnetization));
@@ -635,10 +665,12 @@ void cMC::run(double T_in, int number_of_iterations, int threads){
     steps_per_second = n_tot*number_of_iterations/double(duration.count())*1.0e6;
 }
 
+// Used only for external tools
 double cMC::get_steps_per_second(){
     return (double)steps_per_second;
 }
 
+// Used only for external tools
 vector<double> cMC::get_magnetic_moments(){
     vector<double> m(n_tot*3);
     for(int i_atom=0; i_atom<n_tot; i_atom++)
@@ -647,6 +679,7 @@ vector<double> cMC::get_magnetic_moments(){
     return m;
 }
 
+// Used only for external tools
 vector<double> cMC::get_magnetic_gradients(){
     vector<double> m(n_tot*3);
     valarray<double> grad(3);
@@ -659,8 +692,10 @@ vector<double> cMC::get_magnetic_gradients(){
     return m;
 }
 
+// Set the initial magnetic moments
 void cMC::set_magnetic_moments(vector<double> m_in)
 {
+    // Check whether there are 3 * n_atoms entries
     if(int(m_in.size())!=3*n_tot)
         throw invalid_argument("Length of magnetic moments not correct");
     for(int i_atom=0; i_atom<n_tot; i_atom++)
@@ -671,20 +706,24 @@ void cMC::set_magnetic_moments(vector<double> m_in)
     reset();
 }
 
+// Used only for external tools
 double cMC::get_mean_energy(int index){
     return E_tot.E_mean(index);
 }
 
+// Used only for external tools
 double cMC::get_energy_variance(int index){
     return E_tot.E_var(index);
 }
 
+// Used only for external tools
 double cMC::get_acceptance_ratio(){
     if(MC_count==0)
         return 0;
     return acc/(double)MC_count;
 } 
 
+// Used only for external tools
 vector<double> cMC::get_acceptance_ratios(){
     vector<double> v(n_tot);
     for(int i=0; i<n_tot; i++)
@@ -694,6 +733,7 @@ vector<double> cMC::get_acceptance_ratios(){
 
 void cMC::set_magnitude(vector<double> dm, vector<double> dphi, vector<int> flip)
 {
+    // Check whether magnitude is defined for all atoms
     if(int(dm.size())!=int(dphi.size()) || n_tot!=int(dm.size()))
         throw invalid_argument("Length of vectors not consistent");
     for(int i=0; i<n_tot; i++)
@@ -717,19 +757,30 @@ void cMC::switch_spin_dynamics(bool on, double damping_parameter, double delta_t
     constants.delta_t = delta_t;
 }
 
-void cMC::set_metadynamics(double aa, double bb, double cc, int dd, double ee, int ff)
-{
-    meta.set_metadynamics(aa, bb, cc, dd, ee ,ff);
+    
+void cMC::set_metadynamics(
+    double max_range_in,
+    double energy_increment_in,
+    double length_scale_in,
+    int bins,
+    double cutoff_in,
+    int derivative
+) {
+    meta.set_metadynamics(
+        max_range_in, energy_increment_in, length_scale_in, bins, cutoff_in, derivative
+    );
 }
 
 void cMC::update_magnetization(int mc_id, bool backward)
 {
+    // backward is used for not-accepted steps
     if (backward)
         magnetization -= atom[mc_id].delta_m()/(double)n_tot;
     else
         magnetization += atom[mc_id].delta_m()/(double)n_tot;
 }
 
+// Used only for external tools
 vector<double> cMC::get_magnetization(){
     return magnetization_hist;
 }
@@ -740,6 +791,7 @@ vector<double> cMC::get_histogram(int derivative){
 
 void cMC::reset()
 {
+    // Reset statistics
     acc = 0;
     MC_count = 0;
     E_tot.reset();
@@ -786,11 +838,15 @@ void Metadynamics::set_metadynamics(
     denominator = length_scale_in*length_scale_in*2;
     hist.assign(bins, 0);
     cutoff = cutoff_in*length_scale_in;
+    // Whether to use the derivative of the free energy surface to avoid discontinuity
+    // between bins. From the computational point of view, it makes little sense to
+    // not use derivative
     use_derivative = false;
     if (derivative != 0)
         use_derivative = true;
 }
 
+// Give the gradient at the given magnetic moment. Only used for external tools
 double Metadynamics::get_biased_gradient(double m){
     if (!initialized)
         throw invalid_argument("metadynamics not initialized yet");
@@ -802,6 +858,7 @@ double Metadynamics::get_biased_gradient(double m){
     return hist.at(int(m*0.5/mass));
 }
 
+// Give the energy value at the given magnetic moment. Only used for external tools
 double Metadynamics::get_biased_energy(double m_new, double m_tmp){
     if (!initialized)
         throw invalid_argument("metadynamics not initialized yet");
@@ -840,14 +897,19 @@ vector<double> Metadynamics::get_histogram(vector<double>& magnetization, int de
     if (derivative!=0 && !use_derivative)
         throw invalid_argument("derivative can be taken only if use_derivative is activated");
     vector<double> m_range(hist.size());
+    // First n values are the positions of the magnetic moments
     for (int i=0; i<int(m_range.size()); i++)
         m_range.at(i) = max_range*(0.5+i)/m_range.size();
     if (!use_derivative || derivative!=0)
     {
+        // Second n values are the hist values, which means the derivative
+        // of the free energy surface.
         m_range.insert( m_range.end(), hist.begin(), hist.end() );
         return m_range;
     }
     vector<double> h_tmp (hist.size(), 0);
+    // If the user wishes, they can also get the free energy values, which are not
+    // stored in mamonca, so they must be calculated here.
     for (auto m: magnetization)
         for (int i=i_min(m); i<i_max(m); i++)
             h_tmp.at(i) += gauss_exp(m, i);
