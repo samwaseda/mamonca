@@ -1,11 +1,20 @@
 from setuptools.command.build_ext import build_ext
 from setuptools import setup, Extension
+import numpy
 
+# Check if Cython is available
+try:
+    from Cython.Build import cythonize
+except ImportError:
+    def cythonize(module_list):
+        return module_list
 
+# Define the extension module
 ext = Extension(
     'mamonca',
     sources=["mamonca/mc.pyx"],
     language="c++",
+    include_dirs=[numpy.get_include()],
     extra_compile_args=['-std=c++11'],
 )
 
@@ -23,12 +32,12 @@ setup(
     author_email='waseda@mpie.de',
     license='BSD',
     cmdclass={"build_ext": build_ext},
-    ext_modules=[ext],
+    ext_modules=cythonize([ext]),
     options={'build': {'build_lib': 'mamonca'}},
     setup_requires=[
-        # Setuptools 18.0 properly handles Cython extensions.
         'setuptools>=18.0',
         'cython',
         'numpy',
     ],
 )
+
