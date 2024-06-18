@@ -16,15 +16,14 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
     - uses: actions/checkout@v4
-    - uses: conda-incubator/setup-miniconda@v2
+    - name: Set up Python
+      uses: actions/setup-python@v4
       with:
-        miniforge-variant: Mambaforge
         python-version: ${{ matrix.python-version }}
-        channel-priority: strict
-        environment-file: .ci_support/environment.yml
 
     - name: Install dependencies
-      run: conda env update --file .ci_support/environment.yml --name base
+      run: |
+        pip install numpy cython scipy
 
     - name: run tests
       shell: bash -l {0}
