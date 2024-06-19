@@ -38,7 +38,7 @@ Magnetic interactions account for a significant portion of free energy in certai
 
 $$\mathcal H = -\frac{1}{2}\sum_{ij,\kappa}J_{ij,\kappa}m_i^{2\kappa+1}m_j^{2\kappa+1} + \sum_{i,\kappa} A_{i,\kappa} m_i^{2\kappa}$$
 
-where $i$ and $j$ go over all atoms and $\kappa$ is the exponent ($\kappa=1$ and $A_{i,\kappa}=0$ for all $i$ and $\kappa$ for the classical Heisenberg model) and $m_i$ is the magnetic moment of the atom $i$. These parameters can be set independently via `mamonca.set_landau_parameters` for the longitudinal parameters $A_{i, \kappa}$ and and `mamonca.set_heisenberg_parameters` for the Heisenberg parameters $J{ij, \kappa}$. The evaluation takes place either via Metropolis Monte Carlo method or spindynamics.
+where $i$ and $j$ go over all atoms and $\kappa$ is the exponent ($\kappa=1$ and $A_{i,\kappa}=0$ for all $i$ and $\kappa$ for the classical Heisenberg model) and $m_i$ is the magnetic moment of the atom $i$. These parameters can be set independently via `mamonca.set_landau_parameters` for the longitudinal parameters $A_{i, \kappa}$ and `mamonca.set_heisenberg_parameters` for the Heisenberg parameters $J{ij, \kappa}$. The evaluation takes place either via Metropolis Monte Carlo method or spin dynamics. More technical details and simple examples are given in `notebooks/first_steps.ipynb`.
 
 # Statement of need
 
