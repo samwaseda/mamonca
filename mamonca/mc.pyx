@@ -70,20 +70,20 @@ cdef class MC:
 
     def set_heisenberg_coeff(self, coeff, i=None, j=None, deg=1, index=0):
         """
-            Args:
-                coeff (float/list/ndarray/scipy.sparse): Heisenberg coefficient.
-                    If a single number is given, the same parameter is applied
-                    to all the pairs defined in me and neigh. Instead of
-                    giving me and neigh, you can also give a n_atom x n_atom
-                    tensor.
-                i (list/ndarray): list of indices i (s. def in the comment)
-                j (list/ndarray): list of indices j (s. def in the comment)
-                deg (int): polynomial degree
-                index (int): potential index for thermodynamic integration
-                    (0 or 1; choose 0 if not thermodynamic integration)
-            Comment:
-                Heisenberg term is given by: -sum_ij coeff_ij*(m_i*m_j)^deg.
-                Beware of the negative sign.
+        Args:
+            coeff (float/list/ndarray/scipy.sparse): Heisenberg coefficient.
+                If a single number is given, the same parameter is applied
+                to all the pairs defined in me and neigh. Instead of
+                giving me and neigh, you can also give a n_atom x n_atom
+                tensor.
+            i (list/ndarray): list of indices i (s. def in the comment)
+            j (list/ndarray): list of indices j (s. def in the comment)
+            deg (int): polynomial degree
+            index (int): potential index for thermodynamic integration
+                (0 or 1; choose 0 if not thermodynamic integration)
+        Comment:
+            Heisenberg term is given by: -sum_ij coeff_ij*(m_i*m_j)^deg.
+            Beware of the negative sign.
         """
         if i is None and j is None:
             n = self.c_mc.get_number_of_atoms()
@@ -119,11 +119,11 @@ cdef class MC:
 
     def clear_heisenberg_coeff(self, index=0):
         """
-            Args:
-                index (int): potential index for thermodynamic integration (0 or 1; choose 0 if
-                             not thermodynamic integration)
+        Args:
+            index (int): potential index for thermodynamic integration (0 or 1; choose 0 if
+                         not thermodynamic integration)
 
-            This function erases all the Heisenberg coefficients defined before.
+        This function erases all the Heisenberg coefficients defined before.
         """
         self.c_mc.clear_heisenberg_coeff(index)
 
