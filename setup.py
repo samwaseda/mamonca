@@ -1,5 +1,7 @@
-from setuptools.command.build_ext import build_ext
 from setuptools import setup, Extension
+from setuptools.command.build_ext import build_ext
+from Cython.Build import cythonize
+import numpy
 
 
 ext = Extension(
@@ -7,6 +9,7 @@ ext = Extension(
     sources=["mamonca/mc.pyx"],
     language="c++",
     extra_compile_args=['-std=c++11'],
+    include_dirs=[numpy.get_include()],
 )
 
 with open('README.md') as readme_file:
@@ -22,13 +25,6 @@ setup(
     author='Sam Waseda',
     author_email='waseda@mpie.de',
     license='BSD',
-    cmdclass={"build_ext": build_ext},
-    ext_modules=[ext],
+    ext_modules=cythonize([ext]),
     options={'build': {'build_lib': 'mamonca'}},
-    setup_requires=[
-        # Setuptools 18.0 properly handles Cython extensions.
-        'setuptools>=18.0',
-        'cython',
-        'numpy',
-    ],
 )
