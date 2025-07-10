@@ -30,4 +30,3 @@ jobs:
       run: |
         pip install -e .
         python -m unittest discover tests/
-
