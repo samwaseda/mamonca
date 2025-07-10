@@ -50,7 +50,8 @@ class TestFull(unittest.TestCase):
         m = self.mc.get_magnetic_moments()
         self.assertLess(np.max(m), 1)
         self.assertGreater(np.min(m), -1)
-        self.assertAlmostEqual(np.linalg.norm(m, axis=-1).ptp(), 0)
+        norm = np.linalg.norm(m, axis=-1)
+        self.assertAlmostEqual(norm.min(), norm.max())
 
     def test_magnetization(self):
         m = self.mc.get_magnetization()
