@@ -16,6 +16,8 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
     - uses: actions/checkout@v4
+    - name: Conda config
+      run: echo -e "channels:\n  - conda-forge\n" > .condarc
     - uses: conda-incubator/setup-miniconda@v3
       with:
         activate-environment: mamonca-test
