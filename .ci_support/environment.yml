@@ -2,9 +2,7 @@ name: mamonca-test
 channels:
   - conda-forge
 dependencies:
+  - setuptools
   - numpy
   - cython
   - scipy
-  - cmake
-  - make
-  - {{ compiler('cxx') }}
