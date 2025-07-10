@@ -28,5 +28,5 @@ jobs:
     - name: run tests
       shell: bash -l {0}
       run: |
-        pip install -v -e .
+        make
         python -m unittest discover tests/
