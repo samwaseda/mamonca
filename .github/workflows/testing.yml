@@ -20,7 +20,6 @@ jobs:
       with:
         miniforge-version: latest
         activate-environment: mamonca-test
-        miniforge-version: latest
         channel-priority: strict
         environment-file: .ci_support/environment.yml
         python-version: ${{ matrix.python-version }}
