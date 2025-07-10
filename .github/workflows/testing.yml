@@ -16,7 +16,9 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
     - uses: actions/checkout@v4
+    - uses: conda-incubator/setup-miniconda@v3
       with:
+        miniforge-version: latest
         activate-environment: mamonca-test
         miniforge-version: latest
         channel-priority: strict
@@ -27,5 +29,5 @@ jobs:
     - name: run tests
       shell: bash -l {0}
       run: |
-        pip install -e .
+        make
         python -m unittest discover tests/
