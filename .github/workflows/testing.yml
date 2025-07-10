@@ -16,15 +16,12 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
     - uses: actions/checkout@v4
-    - name: Conda config
-      run: echo -e "channels:\n  - conda-forge\n" > .condarc
-    - uses: conda-incubator/setup-miniconda@v3
       with:
         activate-environment: mamonca-test
+        miniforge-version: latest
         channel-priority: strict
         environment-file: .ci_support/environment.yml
         python-version: ${{ matrix.python-version }}
-        condarc-file: .condarc
         use-only-tar-bz2: true
 
     - name: run tests
