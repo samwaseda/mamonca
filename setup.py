@@ -1,6 +1,6 @@
-from setuptools import setup, Extension
 from setuptools.command.build_ext import build_ext
-import numpy
+from setuptools import setup, Extension
+
 
 ext = Extension(
     'mamonca',
@@ -23,7 +23,13 @@ setup(
     author='Sam Waseda',
     author_email='waseda@mpie.de',
     license='BSD',
-    ext_modules=[ext],
     cmdclass={"build_ext": build_ext},
+    ext_modules=[ext],
     options={'build': {'build_lib': 'mamonca'}},
+    setup_requires=[
+        # Setuptools 18.0 properly handles Cython extensions.
+        'setuptools>=18.0',
+        'cython',
+        'numpy',
+    ],
 )
