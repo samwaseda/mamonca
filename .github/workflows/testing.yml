@@ -22,6 +22,7 @@ jobs:
         channel-priority: strict
         environment-file: .ci_support/environment.yml
         python-version: ${{ matrix.python-version }}
+        condarc-file: .condarc
         use-only-tar-bz2: true
 
     - name: run tests
