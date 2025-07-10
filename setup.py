@@ -1,5 +1,6 @@
 from setuptools.command.build_ext import build_ext
 from setuptools import setup, Extension
+import numpy
 
 
 ext = Extension(
