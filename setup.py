@@ -7,6 +7,7 @@ ext = Extension(
     sources=["mamonca/mc.pyx"],
     language="c++",
     extra_compile_args=['-std=c++11'],
+    include_dirs=[numpy.get_include()],
 )
 
 with open('README.md') as readme_file:
