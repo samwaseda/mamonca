@@ -34,7 +34,8 @@ class TestPredefine(TestTemplate):
         self.mc.set_metadynamics(max_range=1)
         self.mc.run(temperature=300, number_of_iterations=100)
         meta = self.mc.get_metadynamics_free_energy()
-        self.assertAlmostEqual(np.diff(meta["magnetization"]).ptp(), 0)
+        diff = np.diff(meta["magnetization"])
+        self.assertAlmostEqual(diff.max(), diff.min())
         self.assertLessEqual(meta["free_energy"].max(), 0)
 
     def test_spin_dynamics(self):

@@ -5,3 +5,6 @@ dependencies:
   - numpy
   - cython
   - scipy
+  - cmake
+  - make
+  - {{ compiler('cxx') }}
