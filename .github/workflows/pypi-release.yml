@@ -22,6 +22,9 @@ jobs:
           python -m pip install --upgrade pip
           pip install build cython numpy
 
+      - name: Run make (build step)
+        run: make
+
       - name: Build the package
         run: python -m build
 
