@@ -1,8 +1,10 @@
-from mamonca import MC
-import numpy as np
-import unittest
 import os
+import unittest
+
+import numpy as np
 from scipy.sparse import coo_matrix
+
+from mamonca import MC
 
 
 class TestFull(unittest.TestCase):

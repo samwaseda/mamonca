@@ -1,7 +1,9 @@
-from mamonca import MC
-import numpy as np
-import unittest
 import os
+import unittest
+
+import numpy as np
+
+from mamonca import MC
 
 
 class TestTemplate(unittest.TestCase):
