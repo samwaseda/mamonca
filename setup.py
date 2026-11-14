@@ -22,6 +22,7 @@ setup(
     author="Sam Waseda",
     author_email="waseda@mpie.de",
     license="BSD",
+    install_requires=["numpy>=1.26.4"],
     ext_modules=cythonize([ext]),
     options={"build": {"build_lib": "mamonca"}},
 )
