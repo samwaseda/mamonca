@@ -473,9 +473,9 @@ void cMC::set_heisenberg_coeff(
         throw invalid_argument("Number of coefficients is not the same as the indices");
     for(int i=0; i<int(coeff.size()); i++)
     {
-        if(max(me.at(i), neigh.at(i))>=n_tot)
+        if(me.at(i)<0 || neigh.at(i)<0 || me.at(i)>=n_tot || neigh.at(i)>=n_tot)
             throw invalid_argument(
-                to_string(max(me.at(i), neigh.at(i)))+"is larger than number of atoms"
+                "Atom indices must be between 0 and the number of atoms"
             );
         atom[me.at(i)].set_heisenberg_coeff(atom[neigh.at(i)], coeff.at(i), deg, index);
     }
@@ -499,6 +499,11 @@ void cMC::select_id(vector<int> select_id_in)
 {
     if(int(select_id_in.size())>n_tot)
         throw invalid_argument("select_id longer than the number of atoms");
+    if(select_id_in.empty())
+        throw invalid_argument("select_id cannot be empty");
+    for(int id: select_id_in)
+        if(id<0 || id>=n_tot)
+            throw invalid_argument("select_id entries must be valid atom indices");
     selectable_id = select_id_in;
 }
 
@@ -734,7 +739,8 @@ vector<double> cMC::get_acceptance_ratios(){
 void cMC::set_magnitude(vector<double> dm, vector<double> dphi, vector<int> flip)
 {
     // Check whether magnitude is defined for all atoms
-    if(int(dm.size())!=int(dphi.size()) || n_tot!=int(dm.size()))
+    if(int(dm.size())!=int(dphi.size()) || n_tot!=int(dm.size()) ||
+       n_tot!=int(flip.size()))
         throw invalid_argument("Length of vectors not consistent");
     for(int i=0; i<n_tot; i++)
         atom[i].set_magnitude(dm[i], dphi[i], (flip[i]>0));

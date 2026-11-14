@@ -1,7 +1,9 @@
-from mamonca import MC
-import numpy as np
-import unittest
 import os
+import unittest
+
+import numpy as np
+
+from mamonca import MC
 
 
 class TestFull(unittest.TestCase):
@@ -40,5 +42,5 @@ class TestFull(unittest.TestCase):
         self.assertGreater(m.min(), 0)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()
