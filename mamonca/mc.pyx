@@ -24,7 +24,7 @@ cdef class MC:
     >>> first_shell_tensor = neighbors.get_shell_matrix()[0]
     >>> 
     >>> mc = MC(len(structure))
-    >>> mc.set_heisenberg_coeff(J*first_shell_tensor)
+    >>> mc.set_heisenberg_coeff(J * first_shell_tensor)
     >>> 
     >>> mc.run(temperature=300, number_of_iterations=1000)
 
@@ -43,7 +43,7 @@ cdef class MC:
 
     def __cinit__(self, number_of_atoms):
         """
-        args:
+        Args:
             number_of_atoms (int): number of atoms
         """
         self.c_mc.create_atoms(number_of_atoms)
@@ -51,11 +51,12 @@ cdef class MC:
     def set_landau_coeff(self, coeff, deg, index=0):
         """
         Args:
-            coeff (float/list/ndarray): Coefficient to the Landau term. If a single number is
-                given, the same parameter is applied to all the atoms.
+            coeff (float/list/ndarray): Coefficient to the Landau term. If a
+                single number is given, the same parameter is applied to all
+                the atoms.
             deg (int): Polynomial degree (usually an even number)
-            index (int): Potential index for thermodynamic integration (0 or 1; choose 0 if
-                not thermodynamic integration)
+            index (int): Potential index for thermodynamic integration
+                (0 or 1; choose 0 if not thermodynamic integration)
 
         Comment:
             Landau term is given by: sum_i coeff_i*m_i^deg
@@ -120,8 +121,8 @@ cdef class MC:
     def clear_heisenberg_coeff(self, index=0):
         """
         Args:
-            index (int): potential index for thermodynamic integration (0 or 1; choose 0 if
-                         not thermodynamic integration)
+            index (int): potential index for thermodynamic integration
+                (0 or 1; choose 0 if not thermodynamic integration)
 
         This function erases all the Heisenberg coefficients defined before.
         """
@@ -130,17 +131,15 @@ cdef class MC:
     def clear_landau_coeff(self, index=0):
         """
             Args:
-                index (int): potential index for thermodynamic integration (0 or 1; choose 0 if
-                             not thermodynamic integration)
+                index (int): potential index for thermodynamic integration
+                    (0 or 1; choose 0 if not thermodynamic integration)
 
             This function erases all the Landau coefficients defined before.
         """
         self.c_mc.clear_landau_coeff(index)
 
     def clear_all_coeff(self):
-        """
-            This function erases all the coefficients defined before.
-        """
+        """This function erases all the coefficients defined before."""
         self.clear_heisenberg_coeff()
         self.clear_heisenberg_coeff(1)
         self.clear_landau_coeff()
@@ -184,20 +183,22 @@ cdef class MC:
             Returns:
                 dict of output values
         """
-        return {'energy': self.get_energy(index=index),
-                'mean_energy': self.get_mean_energy(index=index),
-                'magnetization': np.mean(self.get_magnetization()),
-                'energy_variance': self.get_energy_variance(index=index),
-                'acceptance_ratio': self.get_acceptance_ratio(),
-                'steps_per_second': self.get_steps_per_second()}
+        return {
+            'energy': self.get_energy(index=index),
+            'mean_energy': self.get_mean_energy(index=index),
+            'magnetization': np.mean(self.get_magnetization()),
+            'energy_variance': self.get_energy_variance(index=index),
+            'acceptance_ratio': self.get_acceptance_ratio(),
+            'steps_per_second': self.get_steps_per_second()
+        }
 
 
     def run(self, temperature, number_of_iterations=1, reset=True):
         """
             Args:
                 temperature (float): Temperature in K
-                number_of_iterations (int): Number of MC steps (internally multiplied
-                                            by the number of atoms)
+                number_of_iterations (int): Number of MC steps (internally
+                    multiplied by the number of atoms)
                 reset (bool): Resets statistics (s. get_mean_energy() etc.)
         """
         if reset:
@@ -207,7 +208,8 @@ cdef class MC:
     def get_acceptance_ratio(self, individual=False):
         """
             Args:
-                individual (bool): If true, an array containing each acceptance ratio is returned
+                individual (bool): If true, an array containing each
+                    acceptance ratio is returned
             Returns:
                 Acceptance ratio since the last reset (s. reset())
         """
@@ -288,11 +290,11 @@ cdef class MC:
         dphi = np.array([dphi]).flatten()
         flip = np.array([flip]).flatten()
         if len(dm)==1:
-            dm = np.array(self.c_mc.get_number_of_atoms()*dm.tolist())
+            dm = np.array(self.c_mc.get_number_of_atoms() * dm.tolist())
         if len(dphi)==1:
-            dphi = np.array(self.c_mc.get_number_of_atoms()*dphi.tolist())
+            dphi = np.array(self.c_mc.get_number_of_atoms() * dphi.tolist())
         if len(flip)==1:
-            flip = np.array(self.c_mc.get_number_of_atoms()*flip.tolist())
+            flip = np.array(self.c_mc.get_number_of_atoms() * flip.tolist())
         self.c_mc.set_magnitude(dm, dphi, flip)
 
     def run_gradient_descent(self, max_iter=None, step_size=1, decrement=0.001, diff=1.0e-8):
@@ -316,30 +318,42 @@ cdef class MC:
         use_derivative=True,
     ):
         """
-        Set metadynamics calculation. Currently only the average magnetization can be chosen as
-        the collective variable.
+        Set metadynamics calculation. Currently only the average magnetization
+        can be chosen as the collective variable.
 
         Args:
-            max_range (float): Maximum magnetization value (larger: less accurate; smaller:
-                potentially misses free energy minimum)
-            energy_increment (float): Energy increment (or prefactor) for the Gaussian histogram
-                (larger: less accurate; smaller: slower convergence)
-            length_scale (float): Magnetization length scale (or Gaussian smearing) (larger:
-                potentially smears out free energy minimum; smaller: MC could become unstable)
-            bins (int): Number of bins for histogram (larger: slower; smaller: less accurate)
-            cutoff (float): Cutoff value (in length_scale unit) above which the Gaussian smearing
-                is considered to be 0
-            use_derivative (bool): Use derivative information of metadynamics. This should be set
-                to True if the number of atoms is sufficiently high (>1000) and the MC step
-                magnitude is not too large (around 0.1). In other words, except for code testing,
-                it is unlikely that this should be set to False. If set to False, make sure that
-                the number of bins is large enough for the Metadynamics to make sense (it has to
-                be at least 10 x max_range x n_atoms / displacement_magnitude).
+            max_range (float): Maximum magnetization value (larger: less
+                accurate; smaller: potentially misses free energy minimum)
+            energy_increment (float): Energy increment (or prefactor) for the
+                Gaussian histogram (larger: less accurate; smaller: slower
+                convergence)
+            length_scale (float): Magnetization length scale (or Gaussian
+                smearing) (larger: potentially smears out free energy minimum;
+                smaller: MC could become unstable)
+            bins (int): Number of bins for histogram (larger: slower; smaller:
+                less accurate)
+            cutoff (float): Cutoff value (in length_scale unit) above which the
+                Gaussian smearing is considered to be 0
+            use_derivative (bool): Use derivative information of metadynamics.
+                This should be set to True if the number of atoms is
+                sufficiently high (>1000) and the MC step magnitude is not too
+                large (around 0.1). In other words, except for code testing, it
+                is unlikely that this should be set to False. If set to False,
+                make sure that the number of bins is large enough for the
+                Metadynamics to make sense (it has to be at least
+                10 x max_range x n_atoms / displacement_magnitude).
         """
         if bins < max_range/length_scale:
-            raise ValueError('Number of bins too small for this length_scale and max_range')
+            raise ValueError(
+                "Number of bins too small for this length_scale and max_range"
+            )
         self.c_mc.set_metadynamics(
-            max_range, energy_increment, length_scale, bins, cutoff, use_derivative*1
+            max_range,
+            energy_increment,
+            length_scale,
+            bins,
+            cutoff,
+            int(use_derivative),
         )
 
     def get_metadynamics_free_energy(self, derivative=False):
@@ -347,17 +361,23 @@ cdef class MC:
         Get free energy of the metadynamics simulation
 
         Args:
-            derivative (bool): Whether to return the derivative values (only available if
-                derivative is used for metadynamics).
+            derivative (bool): Whether to return the derivative values (only
+                available if derivative is used for metadynamics).
 
         Returns:
             (dict) Containing ndarray of 'magnetization' and 'free_energy'
         """
-        data = np.array(self.c_mc.get_histogram(derivative*1)).reshape(2, -1, order='C')
+        data = np.array(
+            self.c_mc.get_histogram(derivative*1)
+        ).reshape(2, -1, order='C')
         return {'magnetization': data[0], 'free_energy': -data[1]}
 
     def switch_spin_dynamics(
-        self, turn_on=True, damping_parameter=8.0e-3, delta_t=1.0e-3, rescale_mag=True
+        self,
+        turn_on=True,
+        damping_parameter=8.0e-3,
+        delta_t=1.0e-3,
+        rescale_mag=True,
     ):
         """
         Turn on (or off) spin dynamics calculation
@@ -366,9 +386,10 @@ cdef class MC:
             turn_on (bool): Turn on or off (turning it off means mc)
             damping_parameter (float): damping parameter (default: 8.0e-3)
             delta_t (float): time discretization in fs (default: 1.0e-3)
-            rescaler_mag (bool): Whether or not rescale the displacement magnitude. Not setting
-                it to True when spin dynamics on might rescale the time scale. This argument is
-                probably going to be removed in the near future.
+            rescaler_mag (bool): Whether or not rescale the displacement
+                magnitude. Not setting it to True when spin dynamics on might
+                rescale the time scale. This argument is probably going to be
+                removed in the near future.
 
         The equations are based on this paper:
         Ma, Pui-Wai, and S. L. Dudarev.
@@ -376,7 +397,9 @@ cdef class MC:
         Physical Review B 86.5 (2012): 054416.
         https://journals.aps.org/prb/pdf/10.1103/PhysRevB.86.054416
         """
-        self.c_mc.switch_spin_dynamics(1*turn_on, damping_parameter, delta_t, rescale_mag*1)
+        self.c_mc.switch_spin_dynamics(
+            int(turn_on), damping_parameter, delta_t, int(rescale_mag)
+        )
 
     def activate_debug(self):
         """
