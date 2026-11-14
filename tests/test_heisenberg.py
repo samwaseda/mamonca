@@ -10,9 +10,9 @@ class TestFull(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.file_location = os.path.dirname(os.path.abspath(__file__))
-        cls.ij = np.loadtxt(
-            os.path.join(cls.file_location, "neighbors.txt")
-        ).astype(int)
+        cls.ij = np.loadtxt(os.path.join(cls.file_location, "neighbors.txt")).astype(
+            int
+        )
         cls.n = np.max(cls.ij) + 1
         cls.mc = MC(cls.n)
         cls.mc.set_heisenberg_coeff(0.1, *cls.ij)
@@ -29,7 +29,7 @@ class TestFull(unittest.TestCase):
             mc.set_heisenberg_coeff(mat)
             mc.run(100, number_of_iterations=1000)
             self.assertLess(mc.get_energy(), 0)
-            mat = mat + mat # transforms to csr
+            mat = mat + mat  # transforms to csr
 
     def test_acceptance_ratio(self):
         self.assertGreater(self.mc.get_acceptance_ratio(), 0)
@@ -46,6 +46,21 @@ class TestFull(unittest.TestCase):
         mc = MC(np.max(ij))
         self.assertRaises(ValueError, mc.set_heisenberg_coeff, 0.1, *ij)
 
+    def test_invalid_atom_indices(self):
+        mc = MC(2)
+        self.assertRaises(ValueError, mc.set_heisenberg_coeff, 0.1, [-1], [0])
+        self.assertRaises(ValueError, mc.set_heisenberg_coeff, 0.1, [0], [2])
+
+    def test_select_id_validation(self):
+        mc = MC(2)
+        self.assertRaises(ValueError, mc.select_id, [])
+        self.assertRaises(ValueError, mc.select_id, [-1])
+        self.assertRaises(ValueError, mc.select_id, [2])
+
+    def test_magnitude_flip_length(self):
+        mc = MC(2)
+        self.assertRaises(ValueError, mc.set_magnitude, 0, 0, [1, 1, 1])
+
     def test_magnetic_moments(self):
         m = self.mc.get_magnetic_moments()
         self.assertLess(np.max(m), 1)
@@ -59,5 +74,6 @@ class TestFull(unittest.TestCase):
         self.assertLess(m.max(), 1)
         self.assertGreater(m.min(), 0)
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     unittest.main()

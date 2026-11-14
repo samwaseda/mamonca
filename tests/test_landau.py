@@ -40,5 +40,5 @@ class TestFull(unittest.TestCase):
         self.assertGreater(m.min(), 0)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

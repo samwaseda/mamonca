@@ -9,9 +9,9 @@ class TestTemplate(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.file_location = os.path.dirname(os.path.abspath(__file__))
-        cls.ij = np.loadtxt(
-            os.path.join(cls.file_location, "neighbors.txt")
-        ).astype(int)
+        cls.ij = np.loadtxt(os.path.join(cls.file_location, "neighbors.txt")).astype(
+            int
+        )
         cls.n = np.max(cls.ij) + 1
 
 
@@ -24,6 +24,7 @@ class TestRaw(TestTemplate):
         mc.set_lambda(0.5)
         mc.run(temperature=300, number_of_iterations=100)
         self.assertLess(mc.get_energy(index=0), mc.get_energy(index=1))
+
 
 class TestPredefine(TestTemplate):
     def setUp(self):
@@ -44,5 +45,5 @@ class TestPredefine(TestTemplate):
         self.assertLess(self.mc.get_energy(), 0)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()
