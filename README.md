@@ -31,18 +31,16 @@ python setup.py build_ext --user
 In the following simple (but complete) example, we create a bcc Fe system using [pyiron](http://github.com/pyiron/pyiron) (install via `conda install pyiron`) and launch a Metropolis Monte Carlo simulation with a Heisenberg coefficient `J=0.1` (eV) for the first nearest neighbor pairs:
 
 ```python
-from pyiron_atomistics import Project
+import structuretoolkit as stk
+from ase.build import bulk
 from mamonca import MC
 
-basis = Project('.').create.structure.bulk(
-    name='Fe',
-    cubic=True
-)
+basis = bulk("Fe", cubic=True)
 
 # Repeat the structure 10 times in each direction
 structure = basis.repeat(10)
 J = 0.1 # eV
-neighbors = structure.get_neighbors()
+neighbors = stk.analyse.get_neighbors(structure)
 first_shell_tensor = neighbors.get_shell_matrix()[0]
 
 mc = MC(len(structure))
